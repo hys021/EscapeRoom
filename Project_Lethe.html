@@ -14,38 +14,69 @@
   --t:#aac0cc;--td:#3a5060;--tw:#d8eeff;
 }
 body{background:var(--bg);color:var(--t);font-family:'Noto Sans KR',sans-serif;height:100vh;overflow:hidden;user-select:none}
-body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px);pointer-events:none;z-index:9000}
+
+/* CRT + Scanlines + Vignette */
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 3px);pointer-events:none;z-index:9000;animation:scanMove 8s linear infinite}
+@keyframes scanMove{from{background-position:0 0}to{background-position:0 100px}}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.7) 100%);pointer-events:none;z-index:8999}
+
+#glitch-overlay{position:fixed;inset:0;pointer-events:none;z-index:9001;opacity:0}
+.glitching #glitch-overlay{animation:glitchFlash .15s steps(2) 3}
+@keyframes glitchFlash{0%{opacity:.8;background:rgba(0,212,138,.03);transform:translateX(-2px)}25%{opacity:.6;background:rgba(255,0,0,.02);transform:translateX(3px) skewX(1deg)}50%{opacity:.9;background:rgba(0,100,255,.02);transform:translateX(-1px)}75%{opacity:.4;transform:translateX(2px) skewX(-0.5deg)}100%{opacity:0;transform:translateX(0)}}
+
+#particles{position:fixed;inset:0;pointer-events:none;z-index:100;overflow:hidden}
+.particle{position:absolute;background:rgba(0,212,138,.3);border-radius:50%;animation:floatUp linear infinite}
+@keyframes floatUp{0%{transform:translateY(100vh) translateX(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-20px) translateX(var(--drift));opacity:0}}
+
+@keyframes flicker{0%,95%,100%{opacity:1}96%{opacity:.4}97%{opacity:.9}98%{opacity:.3}99%{opacity:.85}}
+#r1 .r-ceil{animation:flicker 4s infinite}
 
 /* INTRO */
-#intro{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:800;padding:40px;text-align:center}
-.i-logo{font-family:'Share Tech Mono',monospace;font-size:64px;color:var(--ac);letter-spacing:18px;margin-bottom:6px;animation:glo 3s ease-in-out infinite alternate}
-@keyframes glo{from{text-shadow:0 0 12px var(--ac)}to{text-shadow:0 0 50px var(--ac),0 0 90px rgba(0,212,138,.25)}}
+#intro{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:800;padding:40px;text-align:center;overflow:hidden}
+#intro::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 80%,rgba(0,212,138,.04) 0%,transparent 60%)}
+.i-logo{font-family:'Share Tech Mono',monospace;font-size:72px;color:var(--ac);letter-spacing:20px;margin-bottom:6px;animation:glo 3s ease-in-out infinite alternate;position:relative}
+.i-logo::after{content:'LETHE';position:absolute;left:2px;top:2px;color:rgba(255,0,100,.15);clip-path:inset(0 0 60% 0);animation:logoGlitch 5s infinite}
+@keyframes logoGlitch{0%,92%,100%{clip-path:inset(0 0 60% 0);transform:translateX(0)}93%{clip-path:inset(20% 0 40% 0);transform:translateX(-3px)}95%{clip-path:inset(60% 0 10% 0);transform:translateX(2px)}97%{clip-path:inset(10% 0 70% 0);transform:translateX(-1px)}}
+@keyframes glo{from{text-shadow:0 0 12px var(--ac)}to{text-shadow:0 0 60px var(--ac),0 0 120px rgba(0,212,138,.2)}}
 .i-sub{font-family:'Share Tech Mono',monospace;color:var(--td);font-size:10px;letter-spacing:6px;margin-bottom:38px}
-.i-div{width:180px;height:1px;background:linear-gradient(90deg,transparent,var(--adim),transparent);margin:0 auto 32px}
-.i-story{max-width:460px;font-size:14px;line-height:2.1;color:var(--t);margin-bottom:40px}
-.i-story p{margin-bottom:10px}
-.hl{color:var(--ac);font-weight:500}
-.i-meta{display:flex;gap:36px;margin-bottom:40px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--td)}
-.i-meta span{color:var(--ac);font-size:13px;display:block;margin-top:3px}
-#sbtn{background:transparent;border:1px solid var(--ac);color:var(--ac);padding:13px 48px;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:5px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
-#sbtn::before{content:'';position:absolute;inset:0;background:var(--ac);transform:scaleX(0);transform-origin:left;transition:transform .3s;z-index:-1}
-#sbtn:hover{color:#000;box-shadow:0 0 28px rgba(0,212,138,.3)}
+.i-div{width:220px;height:1px;background:linear-gradient(90deg,transparent,var(--adim),transparent);margin:0 auto 32px;position:relative}
+.i-div::after{content:'';position:absolute;top:-2px;left:50%;width:6px;height:6px;background:var(--ac);border-radius:50%;transform:translateX(-50%);box-shadow:0 0 12px var(--ac)}
+.i-story{max-width:480px;font-size:14px;line-height:2.2;color:var(--t);margin-bottom:40px;opacity:0;animation:fadeUp 1s .5s forwards}
+.i-story p{margin-bottom:12px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+.hl{color:var(--ac);font-weight:500;text-shadow:0 0 8px rgba(0,212,138,.3)}
+.i-meta{display:flex;gap:40px;margin-bottom:44px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--td);opacity:0;animation:fadeUp 1s 1s forwards}
+.i-meta span{color:var(--ac);font-size:14px;display:block;margin-top:4px}
+#sbtn{background:transparent;border:1px solid var(--ac);color:var(--ac);padding:14px 52px;font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:6px;cursor:pointer;transition:all .4s;position:relative;overflow:hidden;opacity:0;animation:fadeUp 1s 1.5s forwards}
+#sbtn::before{content:'';position:absolute;inset:0;background:var(--ac);transform:scaleX(0);transform-origin:left;transition:transform .4s;z-index:-1}
+#sbtn:hover{color:#000;box-shadow:0 0 40px rgba(0,212,138,.4);transform:scale(1.02)}
 #sbtn:hover::before{transform:scaleX(1)}
 
-/* GAME LAYOUT */
+/* GAME */
 #game{display:none;flex-direction:column;height:100vh}
-#game.on{display:flex}
-#hdr{height:46px;background:var(--panel);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0}
-.h-ttl{font-family:'Share Tech Mono',monospace;color:var(--ac);font-size:14px;letter-spacing:5px}
-#timer{font-family:'Share Tech Mono',monospace;font-size:22px;color:var(--yel);min-width:78px;text-align:center}
-#timer.danger{color:var(--red);animation:tb 1s infinite}
-@keyframes tb{0%,100%{opacity:1}50%{opacity:.25}}
+#game.on{display:flex;animation:gameIn .6s ease}
+@keyframes gameIn{from{opacity:0;filter:brightness(2) saturate(0)}to{opacity:1;filter:brightness(1) saturate(1)}}
+#hdr{height:50px;background:var(--panel);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 22px;flex-shrink:0;position:relative}
+#hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.3}
+.h-ttl{font-family:'Share Tech Mono',monospace;color:var(--ac);font-size:14px;letter-spacing:6px}
+.h-center{display:flex;align-items:center;gap:16px}
+#timer{font-family:'Share Tech Mono',monospace;font-size:24px;color:var(--yel);min-width:80px;text-align:center;text-shadow:0 0 8px rgba(255,176,0,.3)}
+#timer.danger{color:var(--red);animation:tb 1s infinite;text-shadow:0 0 12px rgba(255,64,64,.5)}
+@keyframes tb{0%,100%{opacity:1}50%{opacity:.2}}
+#hint-btn{background:none;border:1px solid var(--td);color:var(--td);font-family:'Share Tech Mono',monospace;font-size:9px;padding:4px 10px;letter-spacing:2px;cursor:pointer;transition:all .3s}
+#hint-btn:hover{border-color:var(--yel);color:var(--yel)}
+#hint-btn.used{opacity:.3;pointer-events:none}
 #rlbl{font-family:'Share Tech Mono',monospace;color:var(--td);font-size:10px;letter-spacing:2px}
-#prog{height:2px;background:var(--bd);flex-shrink:0}
-#pfill{height:100%;background:var(--ac);box-shadow:0 0 6px var(--ac);transition:width .7s;width:0%}
+#prog{height:3px;background:var(--bd);flex-shrink:0;position:relative;overflow:hidden}
+#prog::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);animation:progShine 3s infinite}
+@keyframes progShine{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+#pfill{height:100%;background:linear-gradient(90deg,var(--ac),var(--blu));box-shadow:0 0 10px var(--ac);transition:width .7s cubic-bezier(.4,0,.2,1);width:0%}
 #main{flex:1;display:flex;overflow:hidden}
 #scene{flex:1;display:flex;flex-direction:column;overflow:hidden}
-#rv{flex:1;position:relative;overflow:hidden}
+#rv{flex:1;position:relative;overflow:hidden;perspective:800px}
+
+.room-enter{animation:roomEnter .5s ease}
+@keyframes roomEnter{0%{opacity:0;filter:brightness(3) saturate(0) blur(2px);transform:scale(1.02)}50%{filter:brightness(1.5) saturate(.5) blur(0)}100%{opacity:1;filter:brightness(1) saturate(1);transform:scale(1)}}
 
 /* ROOMS */
 .room{position:absolute;inset:0;display:none}
@@ -53,116 +84,169 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .r-wall{position:absolute;top:0;left:0;right:0;bottom:46%}
 .r-floor{position:absolute;top:54%;left:0;right:0;bottom:0}
 .r-seam{position:absolute;top:53.5%;left:0;right:0;height:1.5px}
-.r-ceil{position:absolute;top:0;left:0;right:0;height:3px}
+.r-ceil{position:absolute;top:0;left:0;right:0;height:4px}
 
 #r1 .r-wall{background:linear-gradient(180deg,#060e10 0%,#08141a 100%)}
 #r1 .r-floor{background:linear-gradient(180deg,#0a181e 0%,#0c1c22 100%)}
 #r1 .r-seam{background:#1a3a44}
-#r1 .r-ceil{background:rgba(0,212,138,.1);box-shadow:0 0 60px rgba(0,212,138,.12)}
+#r1 .r-ceil{background:rgba(0,212,138,.15);box-shadow:0 0 80px rgba(0,212,138,.15)}
 
 #r2 .r-wall{background:linear-gradient(180deg,#070810 0%,#0a0c18 100%)}
 #r2 .r-floor{background:linear-gradient(180deg,#0c1020 0%,#0e1428 100%)}
 #r2 .r-seam{background:#1a2545}
-#r2 .r-ceil{background:rgba(74,158,255,.08);box-shadow:0 0 60px rgba(74,158,255,.08)}
+#r2 .r-ceil{background:rgba(74,158,255,.1);box-shadow:0 0 80px rgba(74,158,255,.1)}
 
 #r3 .r-wall{background:linear-gradient(180deg,#050508 0%,#080810 100%)}
 #r3 .r-floor{background:linear-gradient(180deg,#09090f 0%,#0b0b14 100%)}
 #r3 .r-seam{background:#18154a}
-#r3 .r-ceil{background:rgba(144,96,255,.07);box-shadow:0 0 60px rgba(144,96,255,.08)}
+#r3 .r-ceil{background:rgba(144,96,255,.08);box-shadow:0 0 80px rgba(144,96,255,.1)}
 
-.rname{position:absolute;bottom:10px;left:14px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--td);letter-spacing:3px;border-left:2px solid var(--td);padding-left:7px;opacity:.4}
+#r1::after,#r2::after,#r3::after{content:'';position:absolute;top:0;left:30%;width:40%;height:60%;pointer-events:none;animation:ambientPulse 4s ease-in-out infinite}
+#r1::after{background:radial-gradient(ellipse,rgba(0,212,138,.03) 0%,transparent 70%)}
+#r2::after{background:radial-gradient(ellipse,rgba(74,158,255,.03) 0%,transparent 70%)}
+#r3::after{background:radial-gradient(ellipse,rgba(144,96,255,.03) 0%,transparent 70%)}
+@keyframes ambientPulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+.rname{position:absolute;bottom:12px;left:16px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--td);letter-spacing:3px;border-left:2px solid var(--td);padding-left:8px;opacity:.5}
+
+#r3-flashlight{position:absolute;inset:0;pointer-events:none;z-index:50;opacity:0;transition:opacity .5s}
+#r3-flashlight.active{opacity:1}
 
 /* OBJECTS */
-.obj{position:absolute;cursor:pointer;transition:filter .15s}
-.obj:hover{filter:brightness(1.5)}
-.obj-bg{position:absolute;inset:0;border:1px solid rgba(0,212,138,.1);transition:all .2s}
-.obj:hover .obj-bg{border-color:rgba(0,212,138,.55);background:rgba(0,212,138,.04);box-shadow:0 0 14px rgba(0,212,138,.1)}
+.obj{position:absolute;cursor:pointer;transition:all .2s}
+.obj:hover{filter:brightness(1.4);transform:scale(1.01)}
+.obj-bg{position:absolute;inset:0;border:1px solid rgba(0,212,138,.08);transition:all .3s;border-radius:2px}
+.obj:hover .obj-bg{border-color:rgba(0,212,138,.5);background:rgba(0,212,138,.04);box-shadow:0 0 20px rgba(0,212,138,.1),inset 0 0 20px rgba(0,212,138,.02)}
+.obj:active{transform:scale(.98)}
 .illu{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.lbl{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--ac);white-space:nowrap;opacity:0;transition:opacity .15s;background:rgba(0,0,0,.92);padding:2px 8px;pointer-events:none;border:1px solid rgba(0,212,138,.2)}
-.obj:hover .lbl{opacity:1}
-.dg{position:absolute;inset:0;border:2px solid rgba(0,212,138,.4);display:none;animation:dga 1.5s ease-in-out infinite alternate}
-@keyframes dga{from{border-color:rgba(0,212,138,.2)}to{border-color:rgba(0,212,138,.65)}}
+.lbl{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--ac);white-space:nowrap;opacity:0;transition:all .2s;background:rgba(0,0,0,.95);padding:3px 10px;pointer-events:none;border:1px solid rgba(0,212,138,.3);backdrop-filter:blur(4px)}
+.obj:hover .lbl{opacity:1;bottom:-20px}
+.dg{position:absolute;inset:0;border:2px solid rgba(0,212,138,.4);display:none;animation:dga 2s ease-in-out infinite alternate;border-radius:2px}
+@keyframes dga{from{border-color:rgba(0,212,138,.15);box-shadow:none}to{border-color:rgba(0,212,138,.6);box-shadow:0 0 20px rgba(0,212,138,.15)}}
 
-/* 미발견 오브젝트 탐색 힌트 */
+/* Object discovery states */
 .obj.undiscovered::after{content:'';position:absolute;inset:0;border:1px solid rgba(0,212,138,.18);animation:pulse-hint 3s ease-in-out infinite;pointer-events:none}
 @keyframes pulse-hint{0%,100%{box-shadow:inset 0 0 0 0 rgba(0,212,138,0)}50%{box-shadow:inset 0 0 14px 2px rgba(0,212,138,.08)}}
 .obj.found::after{display:none}
 .obj.found{opacity:.65}
 
-/* 탐색 안내 오버레이 */
-#explore-tip{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,20,14,.88);border:1px solid rgba(0,212,138,.25);padding:6px 18px;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(0,212,138,.7);letter-spacing:2px;white-space:nowrap;animation:tip-fade 4s ease 2s forwards;pointer-events:none;z-index:100}
-@keyframes tip-fade{0%{opacity:1}80%{opacity:1}100%{opacity:0;display:none}}
+/* Explore tip */
+#explore-tip{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,20,14,.88);border:1px solid rgba(0,212,138,.25);padding:6px 18px;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(0,212,138,.7);letter-spacing:2px;white-space:nowrap;animation:tip-fade 5s ease 2s forwards;pointer-events:none;z-index:100}
+@keyframes tip-fade{0%{opacity:1}80%{opacity:1}100%{opacity:0}}
+
+.click-ripple{position:absolute;border:2px solid var(--ac);border-radius:50%;animation:ripple .6s ease-out forwards;pointer-events:none;z-index:200}
+@keyframes ripple{0%{width:0;height:0;opacity:1}100%{width:60px;height:60px;opacity:0;margin:-30px}}
 
 /* DIALOG */
-#dlg{background:var(--panel);border-top:1px solid var(--bd);padding:13px 20px;min-height:90px;max-height:125px;overflow-y:auto;flex-shrink:0}
-.d-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--adim);margin-bottom:5px}
-#dtxt{font-size:13px;line-height:1.85;color:var(--t)}
+#dlg{background:var(--panel);border-top:1px solid var(--bd);padding:14px 22px;min-height:95px;max-height:130px;overflow-y:auto;flex-shrink:0;position:relative}
+#dlg::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--bd),transparent)}
+.d-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--adim);margin-bottom:6px}
+#dtxt{font-size:13px;line-height:1.9;color:var(--t);min-height:20px}
+#dtxt .cursor{display:inline-block;width:2px;height:14px;background:var(--ac);animation:blink .6s infinite;vertical-align:middle;margin-left:2px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
-/* INVENTORY */
-#inv{width:192px;background:var(--panel);border-left:1px solid var(--bd);display:flex;flex-direction:column;flex-shrink:0}
-.inv-h{padding:11px 14px 9px;border-bottom:1px solid var(--bd);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--td)}
-#invlist{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:5px}
-.ii{background:var(--sf);border:1px solid var(--bd);padding:9px 11px;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:9px}
-.ii:hover{border-color:var(--adim);background:var(--aglow)}
-.ii-ico{font-size:19px;line-height:1;flex-shrink:0}
-.ii-n{font-size:11px;color:var(--tw);margin-bottom:1px}
+/* RIGHT PANEL: Inventory + Notes */
+#rpanel{width:210px;background:var(--panel);border-left:1px solid var(--bd);display:flex;flex-direction:column;flex-shrink:0}
+.rp-tabs{display:flex;border-bottom:1px solid var(--bd)}
+.rp-tab{flex:1;padding:10px 0;text-align:center;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--td);cursor:pointer;transition:all .2s;border-bottom:2px solid transparent}
+.rp-tab.active{color:var(--ac);border-bottom-color:var(--ac)}
+.rp-tab:hover{color:var(--t)}
+#inv-panel,#notes-panel{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#notes-panel{display:none}
+#invlist{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:6px}
+.ii{background:var(--sf);border:1px solid var(--bd);padding:10px 12px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;border-radius:2px;animation:itemIn .3s ease}
+@keyframes itemIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+.ii:hover{border-color:var(--adim);background:var(--aglow);transform:translateX(-2px)}
+.ii-ico{font-size:20px;line-height:1;flex-shrink:0}
+.ii-n{font-size:11px;color:var(--tw);margin-bottom:2px;font-weight:500}
 .ii-d{font-size:10px;color:var(--td)}
-.inv-empty{color:var(--td);font-size:11px;padding:14px;text-align:center}
-.inv-tip{padding:9px 13px;font-size:10px;color:var(--td);border-top:1px solid var(--bd);line-height:1.6}
+.inv-empty{color:var(--td);font-size:11px;padding:18px;text-align:center;font-style:italic}
+.rp-tip{padding:10px 14px;font-size:10px;color:var(--td);border-top:1px solid var(--bd);line-height:1.7}
+
+/* Notes */
+#noteslist{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:4px}
+.note-item{background:var(--sf);border:1px solid var(--bd);padding:8px 10px;border-radius:2px;font-size:10px;line-height:1.6;animation:itemIn .3s ease}
+.note-item .note-room{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--td);letter-spacing:1px;margin-bottom:3px}
+.note-item .note-text{color:var(--t)}
+.note-item .note-text .note-hl{color:var(--yel);font-weight:500}
+.notes-empty{color:var(--td);font-size:11px;padding:18px;text-align:center;font-style:italic}
 
 /* MODAL */
-#mbg{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:500}
-#mbg.on{display:flex}
-#mbox{background:var(--panel);border:1px solid var(--bd);width:440px;max-height:84vh;overflow-y:auto;position:relative;animation:mi .2s ease}
-@keyframes mi{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
-.m-hdr{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+#mbg{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:500;backdrop-filter:blur(4px)}
+#mbg.on{display:flex;animation:modalBgIn .3s ease}
+@keyframes modalBgIn{from{opacity:0}to{opacity:1}}
+#mbox{background:var(--panel);border:1px solid var(--bd);width:480px;max-height:84vh;overflow-y:auto;position:relative;animation:mi .3s cubic-bezier(.4,0,.2,1);border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 1px var(--ac)}
+@keyframes mi{from{transform:translateY(20px) scale(.97);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+.m-hdr{padding:15px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
 .m-ttl{font-family:'Share Tech Mono',monospace;color:var(--ac);font-size:11px;letter-spacing:3px}
-.m-x{background:none;border:none;color:var(--td);cursor:pointer;font-size:16px;padding:0 3px;transition:color .15s;line-height:1}
-.m-x:hover{color:var(--red)}
-.m-body{padding:18px;font-size:13px;line-height:1.85;color:var(--t)}
-.doc{background:#030906;border:1px solid var(--adim);padding:18px;font-family:'Share Tech Mono',monospace;font-size:11px;line-height:2;margin-top:12px}
-.doc-ttl{color:var(--ac);font-size:11px;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--adim)}
+.m-x{background:none;border:none;color:var(--td);cursor:pointer;font-size:18px;padding:4px 6px;transition:all .2s;line-height:1;border-radius:2px}
+.m-x:hover{color:var(--red);background:rgba(255,64,64,.08)}
+.m-body{padding:20px;font-size:13px;line-height:1.9;color:var(--t)}
+.doc{background:#030906;border:1px solid var(--adim);padding:20px;font-family:'Share Tech Mono',monospace;font-size:11px;line-height:2.1;margin-top:14px;border-radius:3px;position:relative;overflow:hidden}
+.doc::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--ac);opacity:.3}
+.doc-ttl{color:var(--ac);font-size:11px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--adim)}
 .dhl{color:var(--yel)}.drd{color:var(--red)}.ddim{color:var(--td);font-size:10px}
+.dfaded{color:var(--red);background:rgba(255,64,64,.06);padding:2px 6px;letter-spacing:2px;border:1px dashed rgba(255,64,64,.2)}
 
 /* NUMPAD */
-.np{margin-top:14px}
-.npd{background:#000;border:1px solid var(--adim);padding:12px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:26px;color:var(--ac);letter-spacing:10px;min-height:54px;margin-bottom:9px;text-shadow:0 0 8px var(--ac)}
-.npg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
-.nb{background:var(--sf);border:1px solid var(--bd);color:var(--t);padding:12px;font-family:'Share Tech Mono',monospace;font-size:15px;cursor:pointer;transition:all .12s}
-.nb:hover{background:#1a2a3a;border-color:var(--adim);color:var(--ac)}
+.np{margin-top:16px}
+.npd{background:#000;border:1px solid var(--adim);padding:14px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:28px;color:var(--ac);letter-spacing:12px;min-height:58px;margin-bottom:10px;text-shadow:0 0 10px var(--ac);border-radius:3px}
+.npg{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.nb{background:var(--sf);border:1px solid var(--bd);color:var(--t);padding:14px;font-family:'Share Tech Mono',monospace;font-size:16px;cursor:pointer;transition:all .15s;border-radius:2px}
+.nb:hover{background:#1a2a3a;border-color:var(--adim);color:var(--ac);transform:scale(1.02)}
+.nb:active{transform:scale(.95)}
 .nb-ok{grid-column:span 2;background:var(--adim);color:#000;font-weight:700}
-.nb-ok:hover{background:var(--ac);border-color:var(--ac);color:#000}
+.nb-ok:hover{background:var(--ac);border-color:var(--ac);color:#000;box-shadow:0 0 15px rgba(0,212,138,.3)}
 .nb-del{color:var(--red)}
-.npm{text-align:center;font-family:'Share Tech Mono',monospace;font-size:10px;height:18px;margin-top:7px}
-.npm-e{color:var(--red)}.npm-ok{color:var(--ac)}
+.npm{text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;height:20px;margin-top:8px}
+.npm-e{color:var(--red);animation:shake .3s}.npm-ok{color:var(--ac)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 
 /* VIDEO */
-.vf{background:#000;border:1px solid var(--adim);padding:18px;text-align:center;margin-bottom:14px;position:relative}
-.vf::before{content:'● REC';position:absolute;top:8px;right:10px;color:var(--red);font-family:'Share Tech Mono',monospace;font-size:9px;animation:rb 1s infinite}
+.vf{background:#000;border:1px solid var(--adim);padding:20px;text-align:center;margin-bottom:16px;position:relative;border-radius:3px;overflow:hidden}
+.vf::before{content:'● REC';position:absolute;top:10px;right:12px;color:var(--red);font-family:'Share Tech Mono',monospace;font-size:9px;animation:rb 1s infinite}
+.vf::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.1) 2px,rgba(0,0,0,.1) 3px);pointer-events:none;animation:vhsMove 2s linear infinite}
+@keyframes vhsMove{from{transform:translateY(0)}to{transform:translateY(6px)}}
 @keyframes rb{0%,100%{opacity:1}50%{opacity:0}}
 .vasc{font-family:'Share Tech Mono',monospace;font-size:9px;line-height:1.4;color:var(--adim)}
 
+/* SEC BADGE in Room 2 */
+.sec-badge{position:absolute;pointer-events:none;z-index:10}
+
 /* ENDING */
-#end{position:fixed;inset:0;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:700;padding:40px;text-align:center}
-#end.on{display:flex}
+#end{position:fixed;inset:0;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:700;padding:40px;text-align:center;overflow:hidden}
+#end.on{display:flex;animation:endIn 1.5s ease}
+@keyframes endIn{0%{opacity:0;filter:brightness(3)}30%{filter:brightness(1)}100%{opacity:1}}
+#end::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(0,212,138,.03) 0%,transparent 50%)}
 .e-clr{font-family:'Share Tech Mono',monospace;color:var(--td);font-size:11px;letter-spacing:3px;margin-bottom:8px}
-.e-h1{font-family:'Share Tech Mono',monospace;color:var(--ac);font-size:30px;letter-spacing:8px;margin-bottom:34px;text-shadow:0 0 40px var(--ac)}
-.letter{max-width:490px;background:#050d08;border:1px solid var(--adim);padding:30px;text-align:left;font-size:14px;line-height:2.2;animation:ltr 1s ease}
-@keyframes ltr{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
-.lp{margin-bottom:14px}.lsig{margin-top:20px;color:var(--td);font-style:italic}.lnm{color:var(--ac);font-weight:500}
-#ra{margin-top:34px;background:transparent;border:1px solid var(--adim);color:var(--ac);padding:11px 34px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all .3s}
-#ra:hover{background:var(--adim)}
+.e-h1{font-family:'Share Tech Mono',monospace;color:var(--ac);font-size:34px;letter-spacing:10px;margin-bottom:38px;text-shadow:0 0 50px var(--ac),0 0 100px rgba(0,212,138,.2);animation:endTitle 2s ease}
+@keyframes endTitle{from{letter-spacing:40px;opacity:0}to{letter-spacing:10px;opacity:1}}
+.letter{max-width:500px;background:#050d08;border:1px solid var(--adim);padding:34px;text-align:left;font-size:14px;line-height:2.3;animation:ltr 1.2s cubic-bezier(.4,0,.2,1);border-radius:4px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+@keyframes ltr{from{opacity:0;transform:translateY(30px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.lp{margin-bottom:16px}.lsig{margin-top:24px;color:var(--td);font-style:italic}.lnm{color:var(--ac);font-weight:500}
+#ra{margin-top:38px;background:transparent;border:1px solid var(--adim);color:var(--ac);padding:12px 38px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all .3s;border-radius:2px}
+#ra:hover{background:var(--adim);transform:scale(1.02)}
 
 /* GAMEOVER */
-#go{position:fixed;inset:0;background:rgba(0,0,0,.95);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:750;text-align:center;padding:40px}
-#go.on{display:flex}
-.go-h{font-family:'Share Tech Mono',monospace;color:var(--red);font-size:32px;letter-spacing:8px;margin-bottom:18px;text-shadow:0 0 30px var(--red)}
-.go-t{font-size:14px;color:var(--td);line-height:2;margin-bottom:28px}
-#goa{background:transparent;border:1px solid var(--red);color:var(--red);padding:11px 34px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;cursor:pointer}
-#goa:hover{background:rgba(255,64,64,.08)}
+#go{position:fixed;inset:0;background:rgba(0,0,0,.98);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:750;text-align:center;padding:40px}
+#go.on{display:flex;animation:goIn 1s ease}
+@keyframes goIn{0%{filter:blur(10px) brightness(0)}50%{filter:blur(0) brightness(2)}100%{filter:none}}
+.go-h{font-family:'Share Tech Mono',monospace;color:var(--red);font-size:36px;letter-spacing:10px;margin-bottom:20px;text-shadow:0 0 40px var(--red);animation:goGlitch 2s infinite}
+@keyframes goGlitch{0%,90%,100%{transform:none}92%{transform:translateX(-3px) skewX(2deg)}94%{transform:translateX(2px) skewX(-1deg)}96%{transform:translateX(-1px)}98%{transform:translateX(1px) skewX(0.5deg)}}
+.go-t{font-size:14px;color:var(--td);line-height:2.2;margin-bottom:30px}
+#goa{background:transparent;border:1px solid var(--red);color:var(--red);padding:12px 38px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;cursor:pointer;border-radius:2px;transition:all .3s}
+#goa:hover{background:rgba(255,64,64,.08);box-shadow:0 0 20px rgba(255,64,64,.2)}
+
+#sound-toggle{position:fixed;bottom:16px;right:16px;z-index:9999;background:var(--panel);border:1px solid var(--bd);color:var(--td);font-family:'Share Tech Mono',monospace;font-size:10px;padding:6px 12px;cursor:pointer;border-radius:2px;transition:all .2s}
+#sound-toggle:hover{border-color:var(--ac);color:var(--ac)}
+#sound-toggle.muted{opacity:.4}
 </style>
 </head>
 <body>
+
+<div id="particles"></div>
+<div id="glitch-overlay"></div>
+<button id="sound-toggle" onclick="toggleSound()">SOUND: ON</button>
 
 <div id="intro">
   <div class="i-logo">LETHE</div>
@@ -185,7 +269,10 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <div id="game">
   <div id="hdr">
     <div class="h-ttl">LETHE</div>
-    <div id="timer">30:00</div>
+    <div class="h-center">
+      <div id="timer">30:00</div>
+      <button id="hint-btn" onclick="showHint()">HINT</button>
+    </div>
     <div id="rlbl">LOADING...</div>
   </div>
   <div id="prog"><div id="pfill"></div></div>
@@ -196,8 +283,6 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         <!-- ROOM 1 격리병동 -->
         <div id="r1" class="room">
           <div class="r-wall"></div><div class="r-floor"></div><div class="r-seam"></div><div class="r-ceil"></div>
-          <div id="explore-tip">↖ 오브젝트를 탐색하세요</div>
-          <!-- 바닥 타일 -->
           <svg style="position:absolute;top:54%;left:0;width:100%;height:46%;pointer-events:none;opacity:.2" viewBox="0 0 800 200" preserveAspectRatio="none">
             <line x1="0" y1="50" x2="800" y2="50" stroke="#1a4050" stroke-width="1"/>
             <line x1="0" y1="100" x2="800" y2="100" stroke="#1a4050" stroke-width="1"/>
@@ -207,16 +292,16 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
             <line x1="480" y1="0" x2="480" y2="200" stroke="#1a4050" stroke-width=".5"/>
             <line x1="640" y1="0" x2="640" y2="200" stroke="#1a4050" stroke-width=".5"/>
           </svg>
-          <!-- 천장 조명 -->
           <svg style="position:absolute;top:0;left:35%;width:30%;height:6%;pointer-events:none;opacity:.6" viewBox="0 0 200 20" preserveAspectRatio="none">
             <rect x="50" y="1" width="100" height="6" stroke="rgba(180,230,210,.3)" stroke-width="1" fill="rgba(180,230,210,.05)"/>
             <line x1="65" y1="7" x2="60" y2="19" stroke="rgba(180,230,210,.08)" stroke-width="10"/>
             <line x1="100" y1="7" x2="100" y2="19" stroke="rgba(180,230,210,.08)" stroke-width="10"/>
             <line x1="135" y1="7" x2="140" y2="19" stroke="rgba(180,230,210,.08)" stroke-width="10"/>
           </svg>
+          <div id="explore-tip">오브젝트를 클릭하여 탐색하세요</div>
 
           <!-- 화이트보드 -->
-          <div class="obj undiscovered" style="left:5%;top:7%;width:24%;height:25%" onclick="act(1,'wb')" id="o-wb">
+          <div class="obj undiscovered" id="o-wb" style="left:5%;top:7%;width:24%;height:25%" onclick="act(1,'wb')">
             <div class="obj-bg"></div>
             <svg class="illu" viewBox="0 0 240 125" preserveAspectRatio="xMidYMid meet">
               <rect x="6" y="5" width="228" height="106" rx="2" stroke="rgba(0,180,100,.5)" stroke-width="2" fill="none"/>
@@ -227,7 +312,6 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
               <line x1="15" y1="56" x2="205" y2="56" stroke="rgba(0,200,120,.12)" stroke-width="1"/>
               <line x1="15" y1="66" x2="180" y2="66" stroke="rgba(0,200,120,.1)" stroke-width="1"/>
               <line x1="15" y1="76" x2="190" y2="76" stroke="rgba(0,200,120,.08)" stroke-width="1"/>
-              <line x1="15" y1="86" x2="170" y2="86" stroke="rgba(0,200,120,.06)" stroke-width="1"/>
               <line x1="6" y1="111" x2="234" y2="111" stroke="rgba(0,160,80,.45)" stroke-width="3"/>
               <rect x="96" y="112" width="48" height="7" rx="1" stroke="rgba(0,160,80,.3)" stroke-width="1" fill="none"/>
             </svg>
@@ -235,32 +319,23 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
           </div>
 
           <!-- 침대 -->
-          <div class="obj undiscovered" style="left:6%;top:43%;width:42%;height:35%" onclick="act(1,'bed')" id="o-bed">
+          <div class="obj undiscovered" id="o-bed" style="left:6%;top:43%;width:42%;height:35%" onclick="act(1,'bed')">
             <div class="obj-bg"></div>
             <svg class="illu" viewBox="0 0 420 175" preserveAspectRatio="xMidYMid meet">
               <rect x="6" y="6" width="408" height="163" rx="3" stroke="rgba(0,150,100,.4)" stroke-width="2" fill="none"/>
-              <!-- 헤드보드 -->
               <rect x="6" y="6" width="50" height="163" stroke="rgba(0,150,100,.45)" stroke-width="1.5" fill="rgba(0,60,40,.1)"/>
               <line x1="18" y1="18" x2="18" y2="158" stroke="rgba(0,150,100,.2)" stroke-width="1"/>
               <line x1="30" y1="18" x2="30" y2="158" stroke="rgba(0,150,100,.18)" stroke-width="1"/>
-              <line x1="42" y1="18" x2="42" y2="158" stroke="rgba(0,150,100,.15)" stroke-width="1"/>
-              <!-- 베개 -->
               <rect x="62" y="14" width="80" height="56" rx="8" stroke="rgba(100,200,160,.5)" stroke-width="1.5" fill="rgba(100,200,160,.04)"/>
-              <line x1="72" y1="28" x2="132" y2="28" stroke="rgba(100,200,160,.2)" stroke-width="1"/>
-              <line x1="72" y1="38" x2="128" y2="38" stroke="rgba(100,200,160,.15)" stroke-width="1"/>
-              <line x1="72" y1="48" x2="126" y2="48" stroke="rgba(100,200,160,.1)" stroke-width="1"/>
-              <!-- 이불 -->
               <rect x="62" y="80" width="348" height="80" rx="2" stroke="rgba(0,130,80,.3)" stroke-width="1" fill="rgba(0,60,40,.04)"/>
               <line x1="62" y1="98" x2="410" y2="98" stroke="rgba(0,130,80,.15)" stroke-width="1"/>
-              <line x1="62" y1="116" x2="410" y2="116" stroke="rgba(0,130,80,.1)" stroke-width="1"/>
-              <!-- 풋보드 -->
               <rect x="374" y="6" width="40" height="163" stroke="rgba(0,150,100,.4)" stroke-width="1.5" fill="rgba(0,60,40,.08)"/>
             </svg>
             <div class="lbl">침대</div>
           </div>
 
           <!-- ID밴드 -->
-          <div class="obj undiscovered" style="left:6%;top:81%;width:16%;height:11%" onclick="act(1,'idband')" id="o-idband">
+          <div class="obj undiscovered" id="o-idband" style="left:6%;top:81%;width:16%;height:11%" onclick="act(1,'idband')">
             <div class="obj-bg" style="border-color:rgba(74,158,255,.25)"></div>
             <svg class="illu" viewBox="0 0 160 55" preserveAspectRatio="xMidYMid meet">
               <rect x="4" y="24" width="152" height="26" rx="2" stroke="rgba(0,150,100,.2)" stroke-width="1" fill="none"/>
@@ -268,7 +343,6 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
               <rect x="60" y="4" width="40" height="20" rx="3" stroke="rgba(100,180,255,.6)" stroke-width="1.5" fill="rgba(15,40,130,.3)"/>
               <line x1="66" y1="9" x2="94" y2="9" stroke="rgba(100,180,255,.35)" stroke-width="1"/>
               <line x1="66" y1="14" x2="90" y2="14" stroke="rgba(100,180,255,.25)" stroke-width="1"/>
-              <line x1="66" y1="19" x2="88" y2="19" stroke="rgba(100,180,255,.2)" stroke-width="1"/>
               <text x="62" y="9" fill="rgba(74,158,255,.45)" font-family="monospace" font-size="5">ID BAND</text>
             </svg>
             <div class="lbl">ID 밴드</div>
@@ -280,23 +354,15 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
             <svg class="illu" viewBox="0 0 180 290" preserveAspectRatio="xMidYMid meet">
               <rect x="8" y="5" width="164" height="280" rx="3" stroke="rgba(0,180,120,.4)" stroke-width="2" fill="none"/>
               <line x1="8" y1="105" x2="172" y2="105" stroke="rgba(0,180,120,.25)" stroke-width="1.5"/>
-              <!-- 상단 문 -->
               <rect x="14" y="10" width="152" height="88" rx="1" stroke="rgba(0,160,100,.2)" stroke-width="1" fill="none"/>
-              <rect x="76" y="48" width="28" height="12" rx="3" stroke="rgba(0,212,138,.5)" stroke-width="1.5" fill="none"/>
-              <circle cx="90" cy="54" r="3.5" stroke="rgba(0,212,138,.4)" stroke-width="1" fill="none"/>
-              <!-- 상단 자물쇠 -->
               <rect x="64" y="22" width="52" height="22" rx="3" stroke="rgba(255,176,0,.5)" stroke-width="1.5" fill="rgba(40,28,0,.3)"/>
               <circle cx="78" cy="33" r="3" stroke="rgba(255,176,0,.4)" stroke-width="1" fill="none"/>
               <circle cx="90" cy="33" r="3" stroke="rgba(255,176,0,.4)" stroke-width="1" fill="none"/>
               <circle cx="102" cy="33" r="3" stroke="rgba(255,176,0,.4)" stroke-width="1" fill="none"/>
               <text x="69" y="20" fill="rgba(255,176,0,.35)" font-family="monospace" font-size="5">LOCK</text>
-              <!-- 하단 문 -->
               <rect x="14" y="111" width="152" height="162" rx="1" stroke="rgba(0,160,100,.2)" stroke-width="1" fill="none"/>
-              <rect x="76" y="190" width="28" height="12" rx="3" stroke="rgba(0,212,138,.45)" stroke-width="1.5" fill="none"/>
-              <!-- 환기 슬릿 -->
               <line x1="18" y1="122" x2="162" y2="122" stroke="rgba(0,180,120,.15)" stroke-width="1"/>
               <line x1="18" y1="131" x2="162" y2="131" stroke="rgba(0,180,120,.12)" stroke-width="1"/>
-              <line x1="18" y1="140" x2="162" y2="140" stroke="rgba(0,180,120,.1)" stroke-width="1"/>
             </svg>
             <div class="lbl" id="locker-lbl">사물함 [잠김]</div>
           </div>
@@ -309,12 +375,11 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
               <rect x="5" y="4" width="120" height="267" rx="2" stroke="rgba(0,160,90,.4)" stroke-width="2.5" fill="none"/>
               <rect x="13" y="12" width="104" height="84" rx="1" stroke="rgba(0,140,80,.22)" stroke-width="1" fill="none"/>
               <rect x="13" y="104" width="104" height="84" rx="1" stroke="rgba(0,140,80,.22)" stroke-width="1" fill="none"/>
-              <rect x="13" y="196" width="104" height="68" rx="1" stroke="rgba(0,140,80,.18)" stroke-width="1" fill="none"/>
               <circle cx="99" cy="158" r="7" stroke="rgba(0,212,138,.45)" stroke-width="1.5" fill="none"/>
               <line x1="106" y1="158" x2="118" y2="158" stroke="rgba(0,212,138,.45)" stroke-width="2.5"/>
               <rect x="86" y="144" width="14" height="20" rx="2" stroke="rgba(255,176,0,.45)" stroke-width="1.5" fill="none"/>
               <path d="M88,144 Q93,135 99,144" stroke="rgba(255,176,0,.45)" stroke-width="1.5" fill="none"/>
-              <text x="8" y="271" fill="rgba(0,212,138,.22)" font-family="monospace" font-size="6">R-02 →</text>
+              <text x="8" y="271" fill="rgba(0,212,138,.22)" font-family="monospace" font-size="6">R-02</text>
             </svg>
             <div class="lbl" id="door1-lbl">사무실 문 [잠김]</div>
           </div>
@@ -325,10 +390,15 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         <!-- ROOM 2 연구원 사무실 -->
         <div id="r2" class="room">
           <div class="r-wall"></div><div class="r-floor"></div><div class="r-seam"></div><div class="r-ceil"></div>
-          <!-- 바닥 카펫 -->
           <svg style="position:absolute;top:54%;left:4%;width:74%;height:44%;pointer-events:none;opacity:.18" viewBox="0 0 600 180" preserveAspectRatio="none">
             <rect x="4" y="4" width="592" height="172" stroke="#2a3560" stroke-width="1.5" fill="none"/>
             <rect x="12" y="12" width="576" height="156" stroke="#202848" stroke-width="1" fill="none"/>
+          </svg>
+          <!-- Security badge on wall -->
+          <svg class="sec-badge" style="right:6%;top:6%;width:10%;height:10%;opacity:.5" viewBox="0 0 100 60" preserveAspectRatio="xMidYMid meet">
+            <rect x="2" y="2" width="96" height="56" rx="3" stroke="rgba(255,176,0,.3)" stroke-width="1" fill="rgba(20,14,0,.2)"/>
+            <text x="8" y="18" fill="rgba(255,176,0,.4)" font-family="monospace" font-size="7">SEC LEVEL</text>
+            <text x="30" y="45" fill="rgba(255,176,0,.6)" font-family="monospace" font-size="22" font-weight="bold">5</text>
           </svg>
 
           <!-- 연구 일지 -->
@@ -341,9 +411,6 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
               <line x1="46" y1="28" x2="156" y2="28" stroke="rgba(200,140,0,.2)" stroke-width="1"/>
               <line x1="46" y1="38" x2="158" y2="38" stroke="rgba(200,140,0,.18)" stroke-width="1"/>
               <line x1="46" y1="48" x2="148" y2="48" stroke="rgba(200,140,0,.15)" stroke-width="1"/>
-              <line x1="46" y1="58" x2="152" y2="58" stroke="rgba(200,140,0,.12)" stroke-width="1"/>
-              <line x1="46" y1="68" x2="144" y2="68" stroke="rgba(200,140,0,.1)" stroke-width="1"/>
-              <line x1="46" y1="78" x2="150" y2="78" stroke="rgba(200,140,0,.08)" stroke-width="1"/>
               <line x1="130" y1="4" x2="126" y2="22" stroke="rgba(255,80,80,.5)" stroke-width="2"/>
               <text x="26" y="14" fill="rgba(255,176,0,.35)" font-family="monospace" font-size="6">JOURNAL</text>
             </svg>
@@ -356,9 +423,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
             <svg class="illu" viewBox="0 0 580 75" preserveAspectRatio="none">
               <rect x="3" y="3" width="574" height="24" rx="2" stroke="rgba(40,80,120,.5)" stroke-width="1.5" fill="rgba(20,40,70,.1)"/>
               <line x1="14" y1="27" x2="14" y2="72" stroke="rgba(40,80,120,.3)" stroke-width="2"/>
-              <line x1="52" y1="27" x2="52" y2="72" stroke="rgba(40,80,120,.2)" stroke-width="1"/>
               <line x1="528" y1="27" x2="528" y2="72" stroke="rgba(40,80,120,.3)" stroke-width="2"/>
-              <line x1="566" y1="27" x2="566" y2="72" stroke="rgba(40,80,120,.2)" stroke-width="1"/>
               <line x1="52" y1="72" x2="528" y2="72" stroke="rgba(40,80,120,.15)" stroke-width="1"/>
             </svg>
             <div class="lbl">책상</div>
@@ -373,7 +438,6 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
               <line x1="16" y1="20" x2="88" y2="20" stroke="rgba(255,200,0,.3)" stroke-width="1"/>
               <line x1="16" y1="30" x2="84" y2="30" stroke="rgba(255,200,0,.25)" stroke-width="1"/>
               <line x1="16" y1="40" x2="80" y2="40" stroke="rgba(255,200,0,.2)" stroke-width="1"/>
-              <line x1="16" y1="50" x2="76" y2="50" stroke="rgba(255,200,0,.15)" stroke-width="1"/>
               <text x="13" y="14" fill="rgba(255,200,0,.4)" font-family="monospace" font-size="7">NOTE!</text>
             </svg>
             <div class="lbl">포스트잇</div>
@@ -385,42 +449,29 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
             <svg class="illu" viewBox="0 0 270 125" preserveAspectRatio="xMidYMid meet">
               <rect x="6" y="5" width="258" height="90" rx="4" stroke="rgba(40,100,200,.5)" stroke-width="2" fill="rgba(4,8,20,.5)"/>
               <rect x="14" y="12" width="242" height="75" rx="2" stroke="rgba(30,80,180,.3)" stroke-width="1" fill="rgba(4,10,28,.6)"/>
-              <line x1="28" y1="30" x2="242" y2="30" stroke="rgba(40,100,200,.12)" stroke-width="1"/>
-              <line x1="28" y1="42" x2="218" y2="42" stroke="rgba(40,100,200,.1)" stroke-width="1"/>
-              <line x1="28" y1="54" x2="224" y2="54" stroke="rgba(40,100,200,.08)" stroke-width="1"/>
               <rect x="110" y="35" width="50" height="34" rx="2" stroke="rgba(255,176,0,.45)" stroke-width="1.5" fill="rgba(30,22,0,.3)"/>
               <rect x="118" y="28" width="34" height="12" rx="4" stroke="rgba(255,176,0,.4)" stroke-width="1.5" fill="none"/>
               <circle cx="135" cy="53" r="5" stroke="rgba(255,176,0,.4)" stroke-width="1" fill="none"/>
               <text x="75" y="76" fill="rgba(74,158,255,.18)" font-family="monospace" font-size="9">LOCKED</text>
               <line x1="126" y1="95" x2="126" y2="113" stroke="rgba(40,100,200,.3)" stroke-width="3"/>
               <line x1="102" y1="113" x2="150" y2="113" stroke="rgba(40,100,200,.3)" stroke-width="2"/>
-              <line x1="100" y1="108" x2="102" y2="121" stroke="rgba(40,100,200,.2)" stroke-width="1.5"/>
-              <line x1="152" y1="108" x2="150" y2="121" stroke="rgba(40,100,200,.2)" stroke-width="1.5"/>
             </svg>
             <div class="lbl" id="comp-lbl">컴퓨터 [잠김]</div>
           </div>
 
           <!-- 파일 캐비닛 -->
-          <div class="obj undiscovered" id="obj-cabinet" style="left:62%;top:22%;width:17%;height:54%" onclick="act(2,'cabinet')">
+          <div class="obj" id="obj-cabinet" style="left:62%;top:22%;width:17%;height:54%" onclick="act(2,'cabinet')">
             <div class="obj-bg"></div>
             <svg class="illu" viewBox="0 0 180 260" preserveAspectRatio="xMidYMid meet">
               <rect x="8" y="5" width="164" height="250" rx="3" stroke="rgba(60,100,200,.4)" stroke-width="2" fill="none"/>
-              <!-- 서랍 1 -->
               <rect x="14" y="12" width="152" height="56" rx="1" stroke="rgba(60,100,200,.25)" stroke-width="1" fill="none"/>
               <rect x="64" y="36" width="52" height="10" rx="2" stroke="rgba(74,158,255,.5)" stroke-width="1.5" fill="none"/>
-              <line x1="88" y1="40" x2="100" y2="40" stroke="rgba(74,158,255,.3)" stroke-width="1"/>
-              <!-- 서랍 2 -->
               <rect x="14" y="74" width="152" height="56" rx="1" stroke="rgba(60,100,200,.25)" stroke-width="1" fill="none"/>
-              <rect x="64" y="98" width="52" height="10" rx="2" stroke="rgba(74,158,255,.45)" stroke-width="1.5" fill="none"/>
-              <!-- 서랍 3 잠금 -->
               <rect x="14" y="136" width="152" height="56" rx="1" stroke="rgba(255,176,0,.35)" stroke-width="1.5" fill="rgba(20,14,0,.1)"/>
               <rect x="64" y="160" width="52" height="10" rx="2" stroke="rgba(255,176,0,.5)" stroke-width="1.5" fill="none"/>
               <rect x="80" y="146" width="20" height="18" rx="3" stroke="rgba(255,176,0,.5)" stroke-width="1.5" fill="none"/>
               <path d="M83,146 Q90,137 97,146" stroke="rgba(255,176,0,.5)" stroke-width="1.5" fill="none"/>
-              <circle cx="90" cy="155" r="3" stroke="rgba(255,176,0,.4)" stroke-width="1" fill="none"/>
-              <!-- 서랍 4 -->
               <rect x="14" y="198" width="152" height="48" rx="1" stroke="rgba(60,100,200,.2)" stroke-width="1" fill="none"/>
-              <rect x="64" y="218" width="52" height="8" rx="2" stroke="rgba(74,158,255,.35)" stroke-width="1" fill="none"/>
             </svg>
             <div class="lbl" id="cab-lbl">캐비닛 [잠김]</div>
           </div>
@@ -433,12 +484,11 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
               <rect x="5" y="4" width="110" height="267" rx="2" stroke="rgba(120,80,220,.4)" stroke-width="2.5" fill="none"/>
               <rect x="13" y="12" width="94" height="80" rx="1" stroke="rgba(100,60,200,.22)" stroke-width="1" fill="none"/>
               <rect x="13" y="100" width="94" height="80" rx="1" stroke="rgba(100,60,200,.22)" stroke-width="1" fill="none"/>
-              <rect x="13" y="188" width="94" height="72" rx="1" stroke="rgba(100,60,200,.18)" stroke-width="1" fill="none"/>
               <circle cx="90" cy="152" r="6" stroke="rgba(144,96,255,.5)" stroke-width="1.5" fill="none"/>
               <line x1="96" y1="152" x2="108" y2="152" stroke="rgba(144,96,255,.5)" stroke-width="2.5"/>
               <rect x="76" y="138" width="14" height="20" rx="2" stroke="rgba(255,176,0,.45)" stroke-width="1.5" fill="none"/>
               <path d="M78,138 Q83,129 90,138" stroke="rgba(255,176,0,.45)" stroke-width="1.5" fill="none"/>
-              <text x="7" y="271" fill="rgba(144,96,255,.28)" font-family="monospace" font-size="6">LAB →</text>
+              <text x="7" y="271" fill="rgba(144,96,255,.28)" font-family="monospace" font-size="6">LAB</text>
             </svg>
             <div class="lbl" id="door2-lbl">실험실 문 [잠김]</div>
           </div>
@@ -449,11 +499,10 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         <!-- ROOM 3 실험실 -->
         <div id="r3" class="room">
           <div class="r-wall"></div><div class="r-floor"></div><div class="r-seam"></div><div class="r-ceil"></div>
-          <!-- 바닥 반사 -->
+          <div id="r3-flashlight"></div>
           <svg style="position:absolute;top:54%;left:0;width:100%;height:44%;pointer-events:none;opacity:.12" viewBox="0 0 800 180" preserveAspectRatio="none">
             <line x1="400" y1="0" x2="400" y2="180" stroke="#5030c0" stroke-width="80" opacity=".25"/>
             <line x1="0" y1="60" x2="800" y2="60" stroke="#18154a" stroke-width="1"/>
-            <line x1="0" y1="120" x2="800" y2="120" stroke="#18154a" stroke-width=".5"/>
           </svg>
 
           <!-- 연구원 프로필 사진 벽 -->
@@ -461,74 +510,48 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
             <div class="obj-bg" style="border-color:rgba(144,96,255,.2)"></div>
             <svg class="illu" viewBox="0 0 460 220" preserveAspectRatio="xMidYMid meet">
               <rect x="4" y="4" width="452" height="212" rx="2" stroke="rgba(100,60,200,.2)" stroke-width="1" fill="none"/>
-              <!-- 사진 6장 행1 -->
               <rect x="12" y="12" width="62" height="76" rx="1" stroke="rgba(120,70,210,.35)" stroke-width="1" fill="rgba(18,8,36,.3)"/>
               <circle cx="43" cy="36" r="13" stroke="rgba(120,70,210,.25)" stroke-width="1" fill="none"/>
-              <rect x="17" y="54" width="52" height="28" rx="1" stroke="rgba(120,70,210,.15)" stroke-width=".5" fill="none"/>
-              <line x1="20" y1="62" x2="64" y2="62" stroke="rgba(120,70,210,.2)" stroke-width="1"/>
-              <line x1="22" y1="70" x2="62" y2="70" stroke="rgba(120,70,210,.15)" stroke-width="1"/>
-
               <rect x="82" y="12" width="62" height="76" rx="1" stroke="rgba(120,70,210,.35)" stroke-width="1" fill="rgba(18,8,36,.3)"/>
               <circle cx="113" cy="36" r="13" stroke="rgba(120,70,210,.25)" stroke-width="1" fill="none"/>
-              <line x1="90" y1="62" x2="134" y2="62" stroke="rgba(120,70,210,.2)" stroke-width="1"/>
-              <line x1="92" y1="70" x2="132" y2="70" stroke="rgba(120,70,210,.15)" stroke-width="1"/>
-
-              <!-- 강조 사진: 김민준 -->
+              <!-- 김민준 강조 -->
               <rect x="152" y="12" width="62" height="76" rx="1" stroke="rgba(0,212,138,.55)" stroke-width="1.5" fill="rgba(0,40,25,.2)"/>
               <circle cx="183" cy="36" r="13" stroke="rgba(0,212,138,.45)" stroke-width="1.5" fill="none"/>
-              <line x1="160" y1="62" x2="204" y2="62" stroke="rgba(0,212,138,.3)" stroke-width="1"/>
-              <line x1="162" y1="70" x2="200" y2="70" stroke="rgba(0,212,138,.25)" stroke-width="1"/>
               <text x="154" y="96" fill="rgba(0,212,138,.45)" font-family="monospace" font-size="6">김민준</text>
               <text x="152" y="104" fill="rgba(0,212,138,.3)" font-family="monospace" font-size="5">연구원</text>
-
               <rect x="222" y="12" width="62" height="76" rx="1" stroke="rgba(120,70,210,.35)" stroke-width="1" fill="rgba(18,8,36,.3)"/>
               <circle cx="253" cy="36" r="13" stroke="rgba(120,70,210,.25)" stroke-width="1" fill="none"/>
-              <line x1="230" y1="62" x2="274" y2="62" stroke="rgba(120,70,210,.2)" stroke-width="1"/>
-
               <rect x="292" y="12" width="62" height="76" rx="1" stroke="rgba(120,70,210,.35)" stroke-width="1" fill="rgba(18,8,36,.3)"/>
               <circle cx="323" cy="36" r="13" stroke="rgba(120,70,210,.25)" stroke-width="1" fill="none"/>
-              <line x1="300" y1="62" x2="344" y2="62" stroke="rgba(120,70,210,.2)" stroke-width="1"/>
-
               <rect x="362" y="12" width="62" height="76" rx="1" stroke="rgba(120,70,210,.3)" stroke-width="1" fill="rgba(18,8,36,.3)"/>
               <circle cx="393" cy="36" r="13" stroke="rgba(120,70,210,.22)" stroke-width="1" fill="none"/>
-
-              <!-- 행 2 -->
+              <!-- 행 2: 추모 벽 -->
               <rect x="12" y="97" width="62" height="76" rx="1" stroke="rgba(120,70,210,.28)" stroke-width="1" fill="rgba(18,8,36,.3)"/>
               <circle cx="43" cy="121" r="13" stroke="rgba(120,70,210,.2)" stroke-width="1" fill="none"/>
               <rect x="82" y="97" width="62" height="76" rx="1" stroke="rgba(120,70,210,.28)" stroke-width="1" fill="rgba(18,8,36,.3)"/>
               <circle cx="113" cy="121" r="13" stroke="rgba(120,70,210,.2)" stroke-width="1" fill="none"/>
-              <rect x="152" y="97" width="62" height="76" rx="1" stroke="rgba(120,70,210,.28)" stroke-width="1" fill="rgba(18,8,36,.3)"/>
-              <circle cx="183" cy="121" r="13" stroke="rgba(120,70,210,.2)" stroke-width="1" fill="none"/>
-              <rect x="222" y="97" width="62" height="76" rx="1" stroke="rgba(120,70,210,.28)" stroke-width="1" fill="rgba(18,8,36,.3)"/>
-              <circle cx="253" cy="121" r="13" stroke="rgba(120,70,210,.2)" stroke-width="1" fill="none"/>
-
+              <!-- 최동혁 추모 -->
+              <rect x="152" y="97" width="132" height="76" rx="1" stroke="rgba(255,100,60,.35)" stroke-width="1.5" fill="rgba(30,8,4,.2)"/>
+              <text x="158" y="115" fill="rgba(255,100,60,.45)" font-family="monospace" font-size="6">IN MEMORIAM</text>
+              <text x="158" y="128" fill="rgba(255,200,150,.35)" font-family="monospace" font-size="5">최동혁 (1993-2028)</text>
+              <text x="158" y="140" fill="rgba(255,200,150,.25)" font-family="monospace" font-size="4.5">"겨울이 올 때마다..."</text>
               <text x="6" y="210" fill="rgba(120,70,210,.28)" font-family="monospace" font-size="7">PROJECT LETHE — 연구팀 프로필</text>
             </svg>
-            <div class="lbl">연구원 프로필 사진</div>
+            <div class="lbl">연구원 프로필 / 추모 벽</div>
           </div>
 
           <!-- 뇌파 측정 장치 -->
           <div class="obj undiscovered" id="o-scanner" style="left:48%;top:12%;width:23%;height:58%" onclick="act(3,'scanner')">
             <div class="obj-bg" style="border-color:rgba(144,96,255,.18)"></div>
             <svg class="illu" viewBox="0 0 280 240" preserveAspectRatio="xMidYMid meet">
-              <!-- 헬멧 상단 -->
               <ellipse cx="140" cy="60" rx="96" ry="55" stroke="rgba(120,80,220,.4)" stroke-width="2" fill="rgba(8,6,20,.4)"/>
               <ellipse cx="140" cy="60" rx="78" ry="40" stroke="rgba(120,80,220,.22)" stroke-width="1" fill="none"/>
-              <ellipse cx="140" cy="60" rx="56" ry="27" stroke="rgba(144,96,255,.32)" stroke-width="1" fill="rgba(18,8,48,.3)"/>
               <circle cx="140" cy="60" r="16" stroke="rgba(144,96,255,.55)" stroke-width="1.5" fill="none"/>
               <circle cx="140" cy="60" r="8" stroke="rgba(144,96,255,.65)" stroke-width="1" fill="rgba(60,30,160,.25)"/>
-              <!-- 전선들 -->
               <path d="M50,60 Q22,35 14,90" stroke="rgba(80,50,160,.3)" stroke-width="2.5" fill="none"/>
               <path d="M230,60 Q258,35 266,90" stroke="rgba(80,50,160,.3)" stroke-width="2.5" fill="none"/>
-              <path d="M76,100 Q50,130 44,175" stroke="rgba(80,50,160,.25)" stroke-width="2" fill="none"/>
-              <path d="M204,100 Q230,130 236,175" stroke="rgba(80,50,160,.25)" stroke-width="2" fill="none"/>
-              <!-- 기둥 -->
               <rect x="110" y="115" width="60" height="90" rx="4" stroke="rgba(100,70,200,.35)" stroke-width="1.5" fill="rgba(8,6,20,.3)"/>
-              <line x1="130" y1="115" x2="130" y2="205" stroke="rgba(100,70,200,.15)" stroke-width="1"/>
-              <line x1="150" y1="115" x2="150" y2="205" stroke="rgba(100,70,200,.15)" stroke-width="1"/>
-              <!-- 베이스 -->
               <rect x="76" y="205" width="128" height="28" rx="4" stroke="rgba(100,70,200,.4)" stroke-width="1.5" fill="rgba(8,6,20,.35)"/>
-              <!-- 상태등 -->
               <circle cx="108" cy="219" r="4" stroke="rgba(144,96,255,.4)" stroke-width="1" fill="rgba(30,16,80,.3)"/>
               <circle cx="140" cy="219" r="4" stroke="rgba(144,96,255,.4)" stroke-width="1" fill="rgba(30,16,80,.3)"/>
               <circle cx="172" cy="219" r="4" stroke="rgba(144,96,255,.4)" stroke-width="1" fill="rgba(30,16,80,.3)"/>
@@ -544,16 +567,10 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
               <rect x="5" y="40" width="270" height="20" rx="2" stroke="rgba(120,60,20,.4)" stroke-width="1.5" fill="rgba(20,10,5,.2)"/>
               <line x1="16" y1="60" x2="16" y2="132" stroke="rgba(120,60,20,.3)" stroke-width="2"/>
               <line x1="264" y1="60" x2="264" y2="132" stroke="rgba(120,60,20,.3)" stroke-width="2"/>
-              <!-- 파일 묶음들 -->
               <rect x="14" y="5" width="40" height="37" rx="1" stroke="rgba(200,80,40,.45)" stroke-width="1.5" fill="rgba(36,8,4,.2)"/>
               <rect x="22" y="8" width="40" height="37" rx="1" stroke="rgba(200,80,40,.38)" stroke-width="1" fill="rgba(36,8,4,.2)"/>
               <rect x="30" y="11" width="40" height="37" rx="1" stroke="rgba(200,80,40,.3)" stroke-width="1" fill="rgba(36,8,4,.2)"/>
-              <line x1="35" y1="20" x2="64" y2="20" stroke="rgba(200,80,40,.25)" stroke-width="1"/>
-              <line x1="35" y1="28" x2="62" y2="28" stroke="rgba(200,80,40,.2)" stroke-width="1"/>
-              <line x1="35" y1="36" x2="64" y2="36" stroke="rgba(200,80,40,.15)" stroke-width="1"/>
-              <!-- 산발된 서류 -->
               <rect x="104" y="14" width="116" height="26" rx="1" stroke="rgba(180,120,60,.28)" stroke-width="1" fill="none" transform="rotate(-3,162,27)"/>
-              <rect x="112" y="10" width="106" height="26" rx="1" stroke="rgba(180,120,60,.2)" stroke-width="1" fill="none" transform="rotate(4,165,23)"/>
               <text x="8" y="75" fill="rgba(200,80,40,.22)" font-family="monospace" font-size="7">피험자 기록</text>
             </svg>
             <div class="lbl">피험자 파일</div>
@@ -568,19 +585,13 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
               <rect x="14" y="14" width="192" height="292" rx="2" stroke="rgba(0,110,50,.28)" stroke-width="1.5" fill="none"/>
               <rect x="22" y="22" width="176" height="105" rx="1" stroke="rgba(0,100,45,.22)" stroke-width="1" fill="none"/>
               <rect x="22" y="135" width="176" height="105" rx="1" stroke="rgba(0,100,45,.22)" stroke-width="1" fill="none"/>
-              <rect x="22" y="248" width="176" height="52" rx="1" stroke="rgba(0,100,45,.18)" stroke-width="1" fill="none"/>
-              <!-- 도어락 키패드 -->
               <rect x="150" y="160" width="40" height="60" rx="4" stroke="rgba(0,212,138,.55)" stroke-width="1.5" fill="rgba(0,28,14,.4)"/>
               <circle cx="162" cy="174" r="4" stroke="rgba(0,212,138,.45)" stroke-width="1.2" fill="none"/>
               <circle cx="178" cy="174" r="4" stroke="rgba(0,212,138,.45)" stroke-width="1.2" fill="none"/>
               <circle cx="162" cy="188" r="4" stroke="rgba(0,212,138,.45)" stroke-width="1.2" fill="none"/>
               <circle cx="178" cy="188" r="4" stroke="rgba(0,212,138,.45)" stroke-width="1.2" fill="none"/>
-              <circle cx="162" cy="202" r="4" stroke="rgba(255,176,0,.55)" stroke-width="1.2" fill="rgba(30,18,0,.3)"/>
-              <circle cx="178" cy="202" r="4" stroke="rgba(0,212,138,.38)" stroke-width="1.2" fill="none"/>
-              <!-- 손잡이 -->
               <circle cx="56" cy="196" r="9" stroke="rgba(0,212,138,.45)" stroke-width="1.5" fill="none"/>
               <line x1="47" y1="196" x2="28" y2="196" stroke="rgba(0,212,138,.45)" stroke-width="2.5"/>
-              <!-- EXIT 표시등 -->
               <rect x="34" y="38" width="44" height="18" rx="2" stroke="rgba(255,60,60,.3)" stroke-width="1" fill="rgba(28,4,4,.2)"/>
               <text x="36" y="51" fill="rgba(255,60,60,.32)" font-family="monospace" font-size="8">EXIT</text>
               <text x="10" y="316" fill="rgba(0,212,138,.2)" font-family="monospace" font-size="6">도어락 — 4자리</text>
@@ -598,17 +609,26 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       </div>
     </div>
 
-    <div id="inv">
-      <div class="inv-h">// 인벤토리</div>
-      <div id="invlist"><div class="inv-empty">아이템 없음</div></div>
-      <div class="inv-tip">아이템을 클릭하면 자세히 볼 수 있습니다.</div>
+    <div id="rpanel">
+      <div class="rp-tabs">
+        <div class="rp-tab active" onclick="switchTab('inv')">인벤토리</div>
+        <div class="rp-tab" onclick="switchTab('notes')">단서 노트</div>
+      </div>
+      <div id="inv-panel">
+        <div id="invlist"><div class="inv-empty">아이템 없음</div></div>
+        <div class="rp-tip">아이템 클릭으로 상세 확인</div>
+      </div>
+      <div id="notes-panel">
+        <div id="noteslist"><div class="notes-empty">발견한 단서 없음</div></div>
+        <div class="rp-tip">단서는 자동으로 기록됩니다</div>
+      </div>
     </div>
   </div>
 </div>
 
 <div id="mbg" onclick="bgClose(event)">
   <div id="mbox">
-    <div class="m-hdr"><div class="m-ttl" id="mttl">ITEM</div><button class="m-x" onclick="closeM()">✕</button></div>
+    <div class="m-hdr"><div class="m-ttl" id="mttl">ITEM</div><button class="m-x" onclick="closeM()">&#10005;</button></div>
     <div class="m-body" id="mbody"></div>
   </div>
 </div>
@@ -633,113 +653,410 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 </div>
 
 <script>
+// ─── AUDIO ENGINE ───
+const AudioEngine={
+  ctx:null,muted:false,initialized:false,
+  init(){if(this.initialized)return;this.ctx=new(window.AudioContext||window.webkitAudioContext)();this.initialized=true},
+  tone(freq,dur,type='sine',vol=0.1,detune=0){if(this.muted||!this.ctx)return;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.type=type;o.frequency.value=freq;o.detune.value=detune;g.gain.setValueAtTime(vol,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+dur);o.connect(g);g.connect(this.ctx.destination);o.start();o.stop(this.ctx.currentTime+dur)},
+  startAmbient(room){if(this.muted||!this.ctx)return;this.stopAmbient();this._ao=[];const fs={1:[55,82.5],2:[65,98],3:[48,72]}[room]||[55,82];fs.forEach((f,i)=>{const o=this.ctx.createOscillator(),g=this.ctx.createGain(),fl=this.ctx.createBiquadFilter();o.type='sawtooth';o.frequency.value=f;fl.type='lowpass';fl.frequency.value=120;fl.Q.value=2;g.gain.value=0.015;o.connect(fl);fl.connect(g);g.connect(this.ctx.destination);o.start();this._ao.push(o);const l=this.ctx.createOscillator(),lg=this.ctx.createGain();l.frequency.value=0.1+i*0.05;lg.gain.value=5;l.connect(lg);lg.connect(o.frequency);l.start();this._ao.push(l)})},
+  stopAmbient(){if(this._ao){this._ao.forEach(o=>{try{o.stop()}catch(e){}});this._ao=[]}},
+  click(){this.tone(800,.05,'square',.04);setTimeout(()=>this.tone(1200,.03,'square',.02),30)},
+  unlock(){this.tone(523,.15,'sine',.08);setTimeout(()=>this.tone(659,.15,'sine',.08),100);setTimeout(()=>this.tone(784,.2,'sine',.1),200)},
+  error(){this.tone(200,.15,'square',.06);setTimeout(()=>this.tone(150,.2,'square',.05),100)},
+  door(){this.tone(100,.3,'sawtooth',.05);this.tone(80,.5,'triangle',.04)},
+  discover(){this.tone(440,.1,'sine',.06);setTimeout(()=>this.tone(660,.1,'sine',.06),80);setTimeout(()=>this.tone(880,.15,'sine',.08),160)},
+  keypad(){this.tone(600+Math.random()*400,.04,'square',.03)},
+  heartbeat(){if(this.muted||!this.ctx)return;this.tone(60,.1,'sine',.12);setTimeout(()=>this.tone(50,.15,'sine',.1),120)},
+  glitch(){if(this.muted||!this.ctx)return;const bs=this.ctx.sampleRate*.08,b=this.ctx.createBuffer(1,bs,this.ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<bs;i++)d[i]=Math.random()*2-1;const s=this.ctx.createBufferSource(),g=this.ctx.createGain();s.buffer=b;g.gain.value=.03;s.connect(g);g.connect(this.ctx.destination);s.start()},
+  static(){if(this.muted||!this.ctx)return;const bs=this.ctx.sampleRate*.5,b=this.ctx.createBuffer(1,bs,this.ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<bs;i++)d[i]=(Math.random()*2-1)*.3;const s=this.ctx.createBufferSource(),g=this.ctx.createGain(),f=this.ctx.createBiquadFilter();s.buffer=b;f.type='bandpass';f.frequency.value=2000;g.gain.setValueAtTime(.02,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,this.ctx.currentTime+.5);s.connect(f);f.connect(g);g.connect(this.ctx.destination);s.start()},
+  shock(){this.tone(80,.4,'sawtooth',.12);this.tone(120,.3,'square',.08);setTimeout(()=>this.glitch(),50)}
+};
+
+function toggleSound(){
+  AudioEngine.muted=!AudioEngine.muted;
+  const b=document.getElementById('sound-toggle');
+  b.textContent=AudioEngine.muted?'SOUND: OFF':'SOUND: ON';
+  b.classList.toggle('muted',AudioEngine.muted);
+  if(AudioEngine.muted)AudioEngine.stopAmbient();
+  else if(S.room&&document.getElementById('game').classList.contains('on'))AudioEngine.startAmbient(S.room);
+}
+
+// ─── PARTICLES ───
+function initParticles(){const c=document.getElementById('particles');for(let i=0;i<25;i++){const p=document.createElement('div');p.className='particle';const sz=Math.random()*2+1;p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*10}s;--drift:${(Math.random()-.5)*60}px;opacity:${Math.random()*.5+.1}`;c.appendChild(p)}}
+
+// ─── RANDOM GLITCH ───
+function randomGlitch(){if(Math.random()<.3){document.body.classList.add('glitching');AudioEngine.glitch();setTimeout(()=>document.body.classList.remove('glitching'),200)}setTimeout(randomGlitch,5000+Math.random()*15000)}
+function triggerGlitch(){document.body.classList.add('glitching');AudioEngine.glitch();setTimeout(()=>document.body.classList.remove('glitching'),300)}
+
+// ─── PARALLAX ───
+document.addEventListener('mousemove',e=>{
+  const rv=document.getElementById('rv');if(!rv)return;
+  const rect=rv.getBoundingClientRect();
+  const cx=(e.clientX-rect.left)/rect.width-.5;
+  const cy=(e.clientY-rect.top)/rect.height-.5;
+  const room=document.querySelector('.room.on');
+  if(!room)return;
+  room.querySelectorAll('.obj').forEach(obj=>{
+    const depth=obj.dataset.depth||1;
+    obj.style.transform=`translate(${cx*-4*depth}px,${cy*-3*depth}px)`;
+  });
+  // Room 3 flashlight
+  const fl=document.getElementById('r3-flashlight');
+  if(fl&&fl.classList.contains('active')){
+    const x=e.clientX-rect.left,y=e.clientY-rect.top;
+    fl.style.background=`radial-gradient(circle 140px at ${x}px ${y}px, transparent 0%, rgba(0,0,0,.35) 100%)`;
+  }
+});
+
+// ─── GAME STATE ───
 const S={room:1,timer:1800,iv:null,start:0,inv:[],
   solved:{locker:false,computer:false,cabinet:false,exit:false},
-  seen:new Set(),npPuz:null,npInput:'',npDigits:4}
+  seen:new Set(),npPuz:null,npInput:'',npDigits:4,
+  hintUsed:0,typewriterTimeout:null,notes:[],
+  // Puzzle clue tracking
+  clue_month:false, clue_day:false
+};
 
 const ITEMS={
-  key:{ico:'🔑',name:'사무실 열쇠',desc:'낡은 열쇠',
+  key:{ico:'\u{1F511}',name:'사무실 열쇠',desc:'낡은 열쇠',
     html:`<div class="doc"><div class="doc-ttl">// 사무실 열쇠</div>녹이 슨 열쇠. 키홀더에 <span class="dhl">"R-02"</span>라고 적혀 있다.<br><br><span class="ddim">사무실 문을 열 수 있을 것 같다.</span></div>`},
-  form:{ico:'📄',name:'임상 동의서',desc:'피험자 동의서',
+  form:{ico:'\u{1F4C4}',name:'임상 동의서',desc:'피험자 동의서',
     html:`<div class="doc"><div class="doc-ttl">// 므네모 연구소 — 임상 피험자 동의서</div>본인 <span class="dhl">김민준</span>은 자의로 기억 삭제 시술에 동의합니다.<br><br>시술 일시: 2029.03.19 &nbsp; 담당: 이수현<br><br><span class="drd">직책: 프로젝트 레테 연구원</span><br><br><span class="ddim">피험자란에 내 이름이 있는데 직책이 "연구원"이다. 이상하다.</span></div>`},
-  card:{ico:'💳',name:'실험실 출입증',desc:'이수현의 출입카드',
+  card:{ico:'\u{1F4B3}',name:'실험실 출입증',desc:'이수현의 출입카드',
     html:`<div class="doc"><div class="doc-ttl">// 실험실 출입증</div>므네모 연구소 — 실험실<br><br>소유자: <span class="dhl">이수현 (수석 연구원)</span><br>발급일: 2028.08.01 / 유효기간: 무제한<br><br><span class="ddim">이수현이 일부러 남겨놓은 것 같다. 실험실 문을 열 수 있을 것 같다.</span></div>`},
-  vfile:{ico:'🗂️',name:'피험자 파일',desc:'피험자 #083 기록',
-    html:`<div class="doc"><div class="doc-ttl">// 피험자 #083 — 기밀 기록</div>이름: <span class="dhl">최동혁</span><br>생년월일: <span class="dhl">1993년 12월 5일</span><br>나이: 31세 / 진단: PTSD<br><br>시술 날짜: 2028.09.17<br>결과: <span class="drd">이상 반응 발생 — 피험자 사망</span><br><br>출구 코드 힌트: <span style="color:var(--yel);font-size:13px">12월 5일 = <span class="dhl">1205</span></span><br><br><span class="ddim">이수현이 이 날짜를 출구 코드로 설정했다고 했다.</span></div>`}
+  vfile:{ico:'\u{1F5C2}',name:'피험자 파일',desc:'피험자 #083 기록 (일부 검열됨)',
+    html:`<div class="doc"><div class="doc-ttl">// 피험자 #083 — 기밀 기록</div>이름: <span class="dhl">최동혁</span><br>생년월일: 1993년 <span class="dfaded">██월 ██일</span> <span class="ddim">[검열됨]</span><br>나이: 31세 / 진단: PTSD<br><br>시술 날짜: 2028.09.17<br>결과: <span class="drd">이상 반응 발생 — 피험자 사망</span><br><br><span class="ddim">생년월일이 검열되어 있다. 출구 코드를 알려면 다른 곳에서 생일 정보를 찾아야 한다.<br>이수현이 출구 코드를 최동혁의 생일(월일 4자리)로 설정했다고 했다.</span></div>`}
+};
+
+const $=id=>document.getElementById(id);
+const has=id=>S.inv.includes(id);
+function markFound(elId){const el=document.getElementById(elId);if(el){el.classList.remove('undiscovered');el.classList.add('found')}}
+
+// ─── TABS ───
+function switchTab(tab){
+  document.querySelectorAll('.rp-tab').forEach((t,i)=>{t.classList.toggle('active',i===(tab==='inv'?0:1))});
+  $('inv-panel').style.display=tab==='inv'?'flex':'none';
+  $('notes-panel').style.display=tab==='notes'?'flex':'none';
 }
 
-const $=id=>document.getElementById(id)
-const has=id=>S.inv.includes(id)
-function markFound(elId){const el=document.getElementById(elId);if(el){el.classList.remove('undiscovered');el.classList.add('found')}}
-function say(txt,lbl='// SYSTEM'){$('dlg').querySelector('.d-lbl').textContent=lbl;$('dtxt').textContent=txt}
-function addItem(id){if(has(id))return;S.inv.push(id);renderInv()}
+// ─── NOTES SYSTEM ───
+function addNote(room,text){
+  const roomNames={1:'격리 병동',2:'사무실',3:'실험실'};
+  S.notes.push({room:roomNames[room]||'???',text});
+  renderNotes();
+}
+function renderNotes(){
+  const el=$('noteslist');
+  if(!S.notes.length){el.innerHTML='<div class="notes-empty">발견한 단서 없음</div>';return}
+  el.innerHTML=S.notes.map(n=>`<div class="note-item"><div class="note-room">// ${n.room}</div><div class="note-text">${n.text}</div></div>`).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+// ─── TYPEWRITER ───
+function say(txt,lbl='// SYSTEM'){
+  $('dlg').querySelector('.d-lbl').textContent=lbl;
+  const el=$('dtxt');
+  if(S.typewriterTimeout)clearTimeout(S.typewriterTimeout);
+  el.innerHTML='';let i=0;
+  function type(){if(i<txt.length){el.innerHTML=txt.substring(0,i+1)+'<span class="cursor"></span>';i++;S.typewriterTimeout=setTimeout(type,18+Math.random()*12)}else el.innerHTML=txt}
+  type();
+}
+
+function addItem(id){if(has(id))return;S.inv.push(id);renderInv();AudioEngine.discover()}
 function renderInv(){
-  const el=$('invlist')
+  const el=$('invlist');
   if(!S.inv.length){el.innerHTML='<div class="inv-empty">아이템 없음</div>';return}
-  el.innerHTML=S.inv.map(id=>{const it=ITEMS[id];return`<div class="ii" onclick="viewItem('${id}')"><div class="ii-ico">${it.ico}</div><div><div class="ii-n">${it.name}</div><div class="ii-d">${it.desc}</div></div></div>`}).join('')
+  el.innerHTML=S.inv.map(id=>{const it=ITEMS[id];return`<div class="ii" onclick="viewItem('${id}')"><div class="ii-ico">${it.ico}</div><div><div class="ii-n">${it.name}</div><div class="ii-d">${it.desc}</div></div></div>`}).join('');
 }
 function viewItem(id){openM('// '+ITEMS[id].name,ITEMS[id].html)}
-function openM(ttl,body){$('mttl').textContent=ttl;$('mbody').innerHTML=body;$('mbg').classList.add('on')}
+function openM(ttl,body){$('mttl').textContent=ttl;$('mbody').innerHTML=body;$('mbg').classList.add('on');AudioEngine.click()}
 function closeM(){$('mbg').classList.remove('on');S.npPuz=null;S.npInput=''}
 function bgClose(e){if(e.target===$('mbg'))closeM()}
+
 function openNP(ttl,desc,pid,digits){
-  S.npPuz=pid;S.npInput='';S.npDigits=digits
-  openM(ttl,`<div style="font-size:13px;color:var(--td);margin-bottom:14px">${desc}</div><div class="np"><div class="npd" id="npd">${'_'.repeat(digits)}</div><div class="npg">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="nb" onclick="npIn('${n}')">${n}</button>`).join('')}<button class="nb nb-del" onclick="npDel()">⌫</button><button class="nb" onclick="npIn('0')">0</button><button class="nb nb-ok" onclick="npOk()">확인</button></div><div class="npm" id="npm"></div></div>`)
+  S.npPuz=pid;S.npInput='';S.npDigits=digits;
+  openM(ttl,`<div style="font-size:13px;color:var(--td);margin-bottom:14px">${desc}</div><div class="np"><div class="npd" id="npd">${'_'.repeat(digits)}</div><div class="npg">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="nb" onclick="npIn('${n}')">${n}</button>`).join('')}<button class="nb nb-del" onclick="npDel()">\u232B</button><button class="nb" onclick="npIn('0')">0</button><button class="nb nb-ok" onclick="npOk()">확인</button></div><div class="npm" id="npm"></div></div>`);
 }
-function npIn(n){if(S.npInput.length>=S.npDigits)return;S.npInput+=n;const d=$('npd');if(d)d.textContent=S.npInput+'_'.repeat(S.npDigits-S.npInput.length)}
-function npDel(){S.npInput=S.npInput.slice(0,-1);const d=$('npd');if(d)d.textContent=S.npInput+'_'.repeat(S.npDigits-S.npInput.length)}
+function npIn(n){if(S.npInput.length>=S.npDigits)return;S.npInput+=n;AudioEngine.keypad();const d=$('npd');if(d)d.textContent=S.npInput+'_'.repeat(S.npDigits-S.npInput.length)}
+function npDel(){S.npInput=S.npInput.slice(0,-1);AudioEngine.click();const d=$('npd');if(d)d.textContent=S.npInput+'_'.repeat(S.npDigits-S.npInput.length)}
 function npOk(){
-  const codes={locker:'4729',computer:'0917',cabinet:'083',exit:'1205'}
-  const m=$('npm')
+  const codes={locker:'4729',computer:'0917',cabinet:'5083',exit:'1205'};
+  const m=$('npm');
   if(S.npInput===codes[S.npPuz]){
-    if(m){m.textContent='✓ 잠금 해제';m.className='npm npm-ok'}
-    S.solved[S.npPuz]=true
-    const _pid=S.npPuz
-    setTimeout(()=>{closeM();onSolved(_pid)},700)
-  } else {
-    if(m){m.textContent='✗ 잘못된 코드';m.className='npm npm-e'}
-    S.npInput=''
-    setTimeout(()=>{const d=$('npd');if(d)d.textContent='_'.repeat(S.npDigits);if(m)m.textContent=''},900)
+    if(m){m.textContent='\u2713 잠금 해제';m.className='npm npm-ok'}
+    S.solved[S.npPuz]=true;AudioEngine.unlock();
+    const _pid=S.npPuz;
+    setTimeout(()=>{closeM();onSolved(_pid)},800);
+  }else{
+    if(m){m.textContent='\u2717 잘못된 코드';m.className='npm npm-e'}
+    AudioEngine.error();S.npInput='';
+    setTimeout(()=>{const d=$('npd');if(d)d.textContent='_'.repeat(S.npDigits);if(m)m.textContent=''},1000);
   }
 }
+
 function onSolved(id){
-  if(id==='locker'){addItem('key');addItem('form');$('locker-lbl').textContent='사물함 [열림]';say('사물함이 열렸다! 사무실 열쇠와 낡은 문서를 발견했다.','// 발견')}
-  if(id==='computer'){$('comp-lbl').textContent='컴퓨터 [켜짐]';say('컴퓨터가 켜졌다. 이수현이 남긴 영상 메시지가 있다.','// 접속');setTimeout(()=>showVideo(),400)}
-  if(id==='cabinet'){addItem('card');addItem('vfile');$('cab-lbl').textContent='캐비닛 [열림]';say('캐비닛이 열렸다! 실험실 출입증과 중요한 파일을 발견했다.','// 발견')}
-  if(id==='exit'){clearInterval(S.iv);const el=Math.floor((Date.now()-S.start)/1000);$('eclr').textContent='클리어 타임: '+String(Math.floor(el/60)).padStart(2,'0')+':'+String(el%60).padStart(2,'0');$('pfill').style.width='100%';setTimeout(()=>$('end').classList.add('on'),900)}
+  triggerGlitch();
+  if(id==='locker'){addItem('key');addItem('form');$('locker-lbl').textContent='사물함 [열림]';say('사물함이 열렸다! 사무실 열쇠와 낡은 문서를 발견했다.','// 발견');addNote(1,'사물함에서 <span class="note-hl">사무실 열쇠</span>와 <span class="note-hl">임상 동의서</span> 획득')}
+  if(id==='computer'){$('comp-lbl').textContent='컴퓨터 [켜짐]';say('컴퓨터가 켜졌다. 이수현이 남긴 영상 메시지가 있다.','// 접속');setTimeout(()=>showVideo(),500)}
+  if(id==='cabinet'){addItem('card');addItem('vfile');$('cab-lbl').textContent='캐비닛 [열림]';say('캐비닛이 열렸다! 실험실 출입증과 중요한 파일을 발견했다.','// 발견');addNote(2,'캐비닛에서 <span class="note-hl">실험실 출입증</span>과 <span class="note-hl">피험자 파일</span> 획득. 생년월일이 검열됨!')}
+  if(id==='exit'){
+    clearInterval(S.iv);AudioEngine.stopAmbient();
+    const el=Math.floor((Date.now()-S.start)/1000);
+    $('eclr').textContent='클리어 타임: '+String(Math.floor(el/60)).padStart(2,'0')+':'+String(el%60).padStart(2,'0');
+    $('pfill').style.width='100%';
+    AudioEngine.unlock();
+    setTimeout(()=>{AudioEngine.tone(261,.3,'sine',.08);setTimeout(()=>AudioEngine.tone(329,.3,'sine',.08),200);setTimeout(()=>AudioEngine.tone(392,.3,'sine',.08),400);setTimeout(()=>AudioEngine.tone(523,.5,'sine',.12),600)},300);
+    setTimeout(()=>$('end').classList.add('on'),1000);
+  }
 }
+
 function showVideo(){
-  openM('// 이수현 — 영상 메시지',`<div class="vf"><div class="vasc">╔══════════════════════╗<br>║  이수현  수석연구원  ║<br>║  2028.09.18  기밀     ║<br>╚══════════════════════╝</div></div><div class="doc"><div class="doc-ttl">// 영상 내용</div>"이 영상을 보고 있다면, 어느 정도 기억을 되찾고 있다는 뜻입니다.<br><br>당신은 피험자가 아니에요. <span class="dhl">당신도 연구팀이었습니다.</span><br><br>2028년 9월 17일, 피험자 <span class="dhl">#083 최동혁</span>에게 과다 시술이 이루어졌고, 그는 사망했습니다.<br><br>팀원들은 죄책감을 견디지 못해 스스로 기억을 지우기로 했어요. 이 연구소에 들어와 스스로 문을 잠근 거예요.<br><br>캐비닛 코드는 피험자 번호 <span class="dhl" style="font-size:15px">0-8-3</span>입니다.<br><br>실험실에 가세요. 출구 코드는 최동혁의 파일 안에 있어요."</div>`)
-  say('이수현의 영상을 시청했다. 캐비닛 코드: 083.','// 핵심 단서')
+  AudioEngine.static();
+  openM('// 이수현 — 영상 메시지',`<div class="vf"><div class="vasc">\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557<br>\u2551  이수현  수석연구원  \u2551<br>\u2551  2028.09.18  기밀     \u2551<br>\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255D</div></div><div class="doc"><div class="doc-ttl">// 영상 내용</div>"이 영상을 보고 있다면, 어느 정도 기억을 되찾고 있다는 뜻입니다.<br><br>당신은 피험자가 아니에요. <span class="dhl">당신도 연구팀이었습니다.</span><br><br>2028년 9월 17일, 피험자 <span class="dhl">#083 최동혁</span>에게 과다 시술이 이루어졌고, 그는 사망했습니다.<br><br>팀원들은 죄책감을 견디지 못해 스스로 기억을 지우기로 했어요.<br><br>캐비닛을 열어야 합니다. 코드는... 이 사무실의 <span class="dhl">보안 등급</span>을 피험자 번호 앞에 붙인 겁니다.<br>보안 등급은 사무실 벽을 잘 보세요.<br><br>실험실에 가면 출구가 있어요. 출구 코드는 최동혁의 파일 안에 있습니다."</div>`);
+  say('이수현의 영상을 시청했다. 캐비닛 코드: 보안등급 + 피험자번호 083','// 핵심 단서');
+  addNote(2,'영상: 나는 연구팀이었다. 피험자 <span class="note-hl">#083 최동혁</span> 사망');
+  addNote(2,'캐비닛 코드 = <span class="note-hl">보안등급</span> + 피험자번호 083. 벽을 확인!');
 }
+
+// ─── CLICK RIPPLE ───
+function createRipple(e){if(!e||!e.target)return;const obj=e.target.closest('.obj');if(!obj)return;const rect=obj.getBoundingClientRect();const r=document.createElement('div');r.className='click-ripple';r.style.left=(e.clientX-rect.left)+'px';r.style.top=(e.clientY-rect.top)+'px';obj.appendChild(r);setTimeout(()=>r.remove(),600)}
+
+// ─── MAIN ACT ───
 function act(room,id){
+  AudioEngine.click();
+  createRipple(event);
+
   if(room===1){
-    if(id==='wb'){if(S.seen.has('wb')){say('"기억을 잃었다고 해서, 당신이 한 일이 사라지는 건 아닙니다." — 이수현','// 화이트보드');return}S.seen.add('wb');markFound('o-wb');openM('// 화이트보드',`<div class="doc"><div class="doc-ttl">// 화이트보드 메모</div>낡은 마커로 쓰인 문장:<br><br><span class="dhl" style="font-size:14px">"기억을 잃었다고 해서,<br>당신이 한 일이 사라지는 건 아닙니다."</span><br><br><span class="ddim">— 프로젝트 레테 수석 연구원, 이수현</span></div>`);say('화이트보드에 이수현이 남긴 메모가 있다.','// 화이트보드')}
-    if(id==='bed'){if(S.seen.has('bed')){say('쪽지: "사물함 비밀번호 = 직원번호". ID 밴드를 확인하자.','// 침대');return}S.seen.add('bed');markFound('o-bed');openM('// 침대 매트리스 아래',`<div class="doc"><div class="doc-ttl">// 접힌 쪽지</div><span class="dhl">"잊지 마. 사물함 비밀번호 = 직원번호"</span><br><br><span class="ddim">ID 밴드에서 직원번호를 찾아야 한다.</span></div>`);say('매트리스 밑에서 쪽지 발견! 직원번호를 찾아야 한다.','// 침대')}
-    if(id==='idband'){if(S.seen.has('idband')){say('ID 밴드: 이름 김민준, 직원번호 4729','// ID 밴드');return}S.seen.add('idband');markFound('o-idband');openM('// ID 밴드',`<div class="doc" style="border-color:#1a3080"><div class="doc-ttl" style="color:#4a9eff">// 므네모 연구소 ID 밴드</div>이름: <span class="dhl">김민준</span><br>직책: 연구원<br><span style="color:var(--yel)">직원번호: 4729</span><br>부서: 프로젝트 레테팀<br><br><span class="ddim">피험자 밴드가 아니다. 연구원 신분증이다.<br>사물함 비밀번호는 직원번호 <span style="color:var(--yel)">4729</span>.</span></div>`);say('ID 밴드에서 직원번호를 발견했다! 직원번호: 4729','// 발견!')}
-    if(id==='locker'){
-      if(S.solved.locker){openM('// 사물함 [열린 상태]',`<div class="doc"><div class="doc-ttl">// 사물함 내부</div>사물함이 열려 있다. 이미 아이템을 획득했다.<br><br>🔑 사무실 열쇠 — 획득<br>📄 임상 동의서 — 획득<br><br><span class="ddim">인벤토리에서 확인할 수 있습니다.</span></div>`);say('사물함은 이미 열려 있다.','// 사물함');return}
-      openNP('// 사물함 — 4자리 코드','직원번호를 알고 있다면 입력하세요. (ID 밴드 참고)','locker',4)
+    // ─── 화이트보드 ───
+    if(id==='wb'){
+      if(S.seen.has('wb')){
+        // 2번째부터 추가 힌트
+        openM('// 화이트보드',`<div class="doc"><div class="doc-ttl">// 화이트보드 메모</div>낡은 마커로 쓰인 문장:<br><br><span class="dhl" style="font-size:14px">"기억을 잃었다고 해서,<br>당신이 한 일이 사라지는 건 아닙니다."</span><br><br><span class="ddim">— 프로젝트 레테 수석 연구원, 이수현</span><br><br><span style="color:var(--td);font-size:10px;border-top:1px solid var(--adim);padding-top:8px;display:block;margin-top:8px">구석에 작게 적혀있다:<br>"숫자는 네 자리. 첫째는 제곱근, 마지막은 제곱."</span></div>`);
+        say('"숫자는 네 자리. 첫째는 제곱근, 마지막은 제곱." — 추가 힌트 발견!','// 화이트보드');
+        return;
+      }
+      S.seen.add('wb');markFound('o-wb');
+      openM('// 화이트보드',`<div class="doc"><div class="doc-ttl">// 화이트보드 메모</div>낡은 마커로 쓰인 문장:<br><br><span class="dhl" style="font-size:14px">"기억을 잃었다고 해서,<br>당신이 한 일이 사라지는 건 아닙니다."</span><br><br><span class="ddim">— 프로젝트 레테 수석 연구원, 이수현</span></div>`);
+      say('화이트보드에 이수현이 남긴 메모가 있다.','// 화이트보드');
+      addNote(1,'화이트보드: "기억을 잃었다고 해서, 당신이 한 일이 사라지는 건 아닙니다." — 이수현');
     }
-    if(id==='door1'){if(!has('key')){say('문이 잠겨 있다. 사물함에서 열쇠를 찾아야 한다.','// 사무실 문');return}goRoom(2)}
+
+    // ─── 침대: 수학 암호 퍼즐 ───
+    if(id==='bed'){
+      if(S.seen.has('bed')){
+        openM('// 침대 매트리스 아래',`<div class="doc"><div class="doc-ttl">// 접힌 쪽지 — 암호</div><span class="dhl">"기억을 잃기 전에 남긴다.<br>내 번호를 잊지 않도록..."</span><br><br><span style="font-size:13px;color:var(--yel);">\u25C6 = \u221A16<br>\u25C7 = (50 - 1) \u00F7 7<br>\u25CB = 10 - 2\u00B3<br>\u25A1 = 3\u00B2 \u00D7 1</span><br><br><span class="dhl">"사물함: \u25C6\u25C7\u25CB\u25A1"</span></div>`);
+        say('쪽지의 수학 암호... 각 기호의 값을 계산해야 한다.','// 침대');return;
+      }
+      S.seen.add('bed');markFound('o-bed');
+      openM('// 침대 매트리스 아래',`<div class="doc"><div class="doc-ttl">// 접힌 쪽지 — 암호</div><span class="dhl">"기억을 잃기 전에 남긴다.<br>내 번호를 잊지 않도록..."</span><br><br><span style="font-size:13px;color:var(--yel);">\u25C6 = \u221A16<br>\u25C7 = (50 - 1) \u00F7 7<br>\u25CB = 10 - 2\u00B3<br>\u25A1 = 3\u00B2 \u00D7 1</span><br><br><span class="dhl">"사물함: \u25C6\u25C7\u25CB\u25A1"</span><br><br><span class="ddim">수학 문제를 풀면 사물함 비밀번호를 알 수 있다!</span></div>`);
+      say('매트리스 밑에서 수학 암호 발견! 계산해서 사물함 코드를 알아내야 한다.','// 침대');
+      addNote(1,'\u25C6=\u221A16, \u25C7=(50-1)\u00F77, \u25CB=10-2\u00B3, \u25A1=3\u00B2\u00D71 → 사물함 코드: <span class="note-hl">\u25C6\u25C7\u25CB\u25A1</span>');
+    }
+
+    // ─── ID밴드: 마모됨 ───
+    if(id==='idband'){
+      if(S.seen.has('idband')){say('ID 밴드: 이름 김민준, 직원번호는 마모되어 판독 불가.','// ID 밴드');return}
+      S.seen.add('idband');markFound('o-idband');
+      openM('// ID 밴드',`<div class="doc" style="border-color:#1a3080"><div class="doc-ttl" style="color:#4a9eff">// 므네모 연구소 ID 밴드</div>이름: <span class="dhl">김민준</span><br>직책: 연구원<br>직원번호: <span class="dfaded">████</span> <span class="ddim">[마모되어 판독 불가]</span><br>부서: 프로젝트 레테팀<br><br><span class="ddim">피험자 밴드가 아니다. 연구원 신분증이다.<br>직원번호가 마모되어 읽을 수 없다. 다른 곳에서 번호를 알아내야 한다.</span></div>`);
+      say('ID 밴드 발견! 하지만 직원번호가 마모되어 읽을 수 없다...','// ID 밴드');
+      addNote(1,'ID밴드: 이름 <span class="note-hl">김민준</span>, 직책 연구원, 직원번호 <span class="note-hl">판독불가</span> (마모)');
+    }
+
+    // ─── 사물함 ───
+    if(id==='locker'){
+      if(S.solved.locker){openM('// 사물함 [열린 상태]',`<div class="doc"><div class="doc-ttl">// 사물함 내부</div>사물함이 열려 있다. 이미 아이템을 획득했다.<br><br>\u{1F511} 사무실 열쇠 — 획득<br>\u{1F4C4} 임상 동의서 — 획득</div>`);return}
+      if(!S.seen.has('bed')){say('사물함이 잠겨 있다. 4자리 코드가 필요하다. 주변을 먼저 살펴보자.','// 사물함');return}
+      openNP('// 사물함 — 4자리 코드','침대 쪽지의 수학 암호를 풀어 코드를 입력하세요.','locker',4);
+    }
+
+    // ─── 사무실 문 ───
+    if(id==='door1'){if(!has('key')){say('문이 잠겨 있다. 사물함에서 열쇠를 찾아야 한다.','// 사무실 문');return}AudioEngine.door();goRoom(2)}
   }
+
   if(room===2){
-    if(id==='journal'){if(S.seen.has('journal')){say('연구 일지 단서: 컴퓨터 비밀번호 = 사고 날짜 0917','// 연구 일지');return}S.seen.add('journal');markFound('o-journal');openM('// 이수현의 연구 일지',`<div class="doc" style="border-color:#3a3000"><div class="doc-ttl" style="color:var(--yel)">// 이수현 연구 일지 (발췌)</div><span class="ddim">2028.07.15</span><br>"프로젝트 레테는 PTSD 환자들의 트라우마 기억을 지워 치료하는 기술이었다."<br><br><span class="ddim">2028.09.10</span><br>"회사가 이 기술을 군사·상업 목적으로 팔려 한다. 나는 반대했지만 막을 수 없었다."<br><br><span class="dhl">2028.09.17</span><br><span class="dhl">"오늘 일어난 일을 절대 잊어선 안 된다. 컴퓨터 비밀번호를 사고 날짜로 바꿔뒀다. <span style="color:var(--yel)">0917</span>."</span><br><br><span class="ddim">2028.09.18 — 이후 기록 없음.</span></div>`);say('연구 일지에서 단서 발견! 컴퓨터 비밀번호: 0917','// 발견!')}
-    if(id==='sticky'){if(S.seen.has('sticky')){say('포스트잇: "비번은 그 날짜로. 연구 일지 참고."','// 포스트잇');return}S.seen.add('sticky');markFound('o-sticky');openM('// 포스트잇',`<div class="doc" style="background:#1a1800;border-color:#5a5000"><div class="doc-ttl" style="color:var(--yel)">// 포스트잇</div><span class="dhl">"비번은 그 날짜로 바꿔뒀음 — 연구 일지 참고."</span><br><br><span class="ddim">연구 일지를 먼저 읽어봐야 한다.</span></div>`);say('포스트잇 힌트: 연구 일지를 찾아야 한다.','// 포스트잇')}
-    if(id==='desk'){say('어지럽게 뒤집힌 책상. 연구 일지와 포스트잇이 있다.','// 책상')}
-    if(id==='computer'){if(S.solved.computer){setTimeout(()=>showVideo(),200);return}if(!S.seen.has('journal')&&!S.seen.has('sticky')){say('컴퓨터가 잠겨 있다. 먼저 주변 단서를 찾아보자.','// 컴퓨터');return}openNP('// 컴퓨터 — 4자리 비밀번호','연구 일지에서 힌트를 찾았다면 입력하세요.','computer',4)}
-    if(id==='cabinet'){if(S.solved.cabinet){say('캐비닛은 이미 열려 있다.','// 캐비닛');return}if(!S.solved.computer){say('캐비닛이 잠겨 있다. 컴퓨터에서 이수현의 메시지를 먼저 확인하자.','// 캐비닛');return}openNP('// 캐비닛 — 3자리 코드','이수현의 영상에서 코드를 들었다면 입력하세요.','cabinet',3)}
-    if(id==='door2'){if(!has('card')){say('실험실 문에 카드 리더기가 있다. 출입증이 필요하다.','// 실험실 문');return}goRoom(3)}
+    // ─── 연구 일지: 날짜 바래짐 ───
+    if(id==='journal'){
+      if(S.seen.has('journal')){
+        openM('// 이수현의 연구 일지',`<div class="doc" style="border-color:#3a3000"><div class="doc-ttl" style="color:var(--yel)">// 이수현 연구 일지 (발췌)</div><span class="ddim">2028.07.15</span><br>"프로젝트 레테는 PTSD 환자들의 트라우마 기억을 지워 치료하는 기술이었다."<br><br><span class="ddim">2028.09.10</span><br>"최종 결정을 내렸다. <span class="dhl">정확히 일주일 뒤</span> 실험을 진행한다."<br><br><span class="dfaded">2028.██.██</span> <span class="ddim">[바래진 날짜]</span><br><span class="drd">"예정대로 오늘 실험을 강행했다. 돌이킬 수 없는 일이 벌어졌다."</span><br><br><span class="ddim">2028.09.18</span><br>"<span class="dhl">어제의</span> 참사를 수습할 수 없다. 모든 것이 끝났다."<br><br><span class="ddim">이후 기록 없음.</span></div>`);
+        say('일지의 바래진 날짜... 앞뒤 맥락에서 추론할 수 있다.','// 연구 일지');return;
+      }
+      S.seen.add('journal');markFound('o-journal');
+      openM('// 이수현의 연구 일지',`<div class="doc" style="border-color:#3a3000"><div class="doc-ttl" style="color:var(--yel)">// 이수현 연구 일지 (발췌)</div><span class="ddim">2028.07.15</span><br>"프로젝트 레테는 PTSD 환자들의 트라우마 기억을 지워 치료하는 기술이었다."<br><br><span class="ddim">2028.09.10</span><br>"최종 결정을 내렸다. <span class="dhl">정확히 일주일 뒤</span> 실험을 진행한다."<br><br><span class="dfaded">2028.██.██</span> <span class="ddim">[바래진 날짜]</span><br><span class="drd">"예정대로 오늘 실험을 강행했다. 돌이킬 수 없는 일이 벌어졌다."</span><br><br><span class="ddim">2028.09.18</span><br>"<span class="dhl">어제의</span> 참사를 수습할 수 없다. 모든 것이 끝났다."<br><br><span class="ddim">이후 기록 없음.</span></div>`);
+      say('연구 일지 발견! 핵심 날짜가 바래져 있다. 앞뒤 맥락을 추론해야 한다!','// 발견!');
+      addNote(2,'일지: 09.10 "<span class="note-hl">정확히 일주일 뒤</span> 실험" → ██.██ "오늘 강행" → 09.18 "<span class="note-hl">어제의</span> 참사"');
+    }
+
+    // ─── 포스트잇 ───
+    if(id==='sticky'){
+      if(S.seen.has('sticky')){say('포스트잇: "비번은 모든 게 시작된 그 날로. 일지를 잘 읽어."','// 포스트잇');return}
+      S.seen.add('sticky');markFound('o-sticky');
+      openM('// 포스트잇',`<div class="doc" style="background:#1a1800;border-color:#5a5000"><div class="doc-ttl" style="color:var(--yel)">// 포스트잇</div><span class="dhl">"비번은 모든 게 시작된 그 날로 바꿔뒀음.<br>연구 일지를 잘 읽어봐."</span><br><br><span class="ddim">컴퓨터 비밀번호가 연구 일지의 특정 날짜라는 뜻이다.</span></div>`);
+      say('포스트잇 힌트: 컴퓨터 비번 = "모든 게 시작된 날". 연구 일지에서 찾자.','// 포스트잇');
+      addNote(2,'포스트잇: 컴퓨터 비번 = "<span class="note-hl">모든 게 시작된 그 날</span>" (일지 참고)');
+    }
+
+    // ─── 책상: 보안등급 문서 ───
+    if(id==='desk'){
+      if(S.seen.has('desk')){say('책상 서랍의 문서 조각: "프로젝트 레테 — 보안 분류: LEVEL..."','// 책상');return}
+      S.seen.add('desk');
+      openM('// 책상 서랍',`<div class="doc"><div class="doc-ttl">// 서랍 속 문서 조각</div>어지럽게 뒤집힌 책상. 서랍 안에서 찢어진 문서를 발견했다.<br><br><span style="color:var(--td);font-size:10px">프로젝트 레테 — 보안 분류 규정<br>...<br>본 연구소의 보안 등급은 다음과 같다:<br>일반 구역: LEVEL 1~3<br>연구원 사무실: <span class="dhl">LEVEL 5</span><br>실험실: LEVEL 7<br>...</span><br><br><span class="ddim">벽에도 보안 등급 표시가 있다. 이 사무실은 LEVEL 5.</span></div>`);
+      say('책상 서랍에서 보안 분류 문서 발견! 이 사무실: LEVEL 5.','// 책상');
+      addNote(2,'보안등급: 연구원 사무실 = <span class="note-hl">LEVEL 5</span>');
+    }
+
+    // ─── 컴퓨터: 추론 날짜 입력 ───
+    if(id==='computer'){
+      if(S.solved.computer){setTimeout(()=>showVideo(),200);return}
+      if(!S.seen.has('journal')&&!S.seen.has('sticky')){say('컴퓨터가 잠겨 있다. 먼저 주변 단서를 찾아보자.','// 컴퓨터');return}
+      openNP('// 컴퓨터 — 4자리 비밀번호','연구 일지에서 추론한 날짜를 입력하세요. (MMDD 형식)','computer',4);
+    }
+
+    // ─── 캐비닛: 보안등급 + 피험자번호 ───
+    if(id==='cabinet'){
+      if(S.solved.cabinet){say('캐비닛은 이미 열려 있다.','// 캐비닛');return}
+      if(!S.solved.computer){say('캐비닛이 잠겨 있다. 컴퓨터에서 이수현의 메시지를 먼저 확인하자.','// 캐비닛');return}
+      openNP('// 캐비닛 — 4자리 코드','이수현의 영상 힌트: 보안등급 + 피험자번호를 조합하세요.','cabinet',4);
+    }
+
+    // ─── 실험실 문 ───
+    if(id==='door2'){if(!has('card')){say('실험실 문에 카드 리더기가 있다. 출입증이 필요하다.','// 실험실 문');return}AudioEngine.door();goRoom(3)}
   }
+
   if(room===3){
-    if(id==='profiles'){if(S.seen.has('profiles')){say('내 프로필 사진: 김민준 — 연구원. 나는 피험자가 아니었다.','// 프로필');return}S.seen.add('profiles');markFound('o-profiles');openM('// 연구원 프로필 사진',`<div class="doc" style="border-color:#15153a"><div class="doc-ttl" style="color:#9060ff">// 프로젝트 레테 — 연구팀</div>벽면 가득 프로필 사진들.<br><br>한 사진이 눈에 들어온다.<br><br><span class="dhl" style="font-size:15px">김민준 — 프로젝트 레테 연구원</span><br><br>내 얼굴이다.<br><br><span class="drd">나는 피험자가 아니었다. 연구원이었다.</span><br><br><span class="ddim">기억을 지운 건 나 자신이었다는 건가.</span></div>`);say('충격적이다. 나는 피험자가 아니라 연구원이었다!','// 반전')}
-    if(id==='scanner'){if(S.seen.has('scanner')){say('기억 삭제 장치. 우리 자신의 기억을 지우는 데도 사용됐다.','// 장치');return}S.seen.add('scanner');markFound('o-scanner');openM('// 뇌파 측정 장치',`<div class="doc" style="border-color:#1a1a40"><div class="doc-ttl" style="color:#9060ff">// 기억 선택적 삭제 시스템</div>거대한 장치가 중앙에 있다. 전원이 꺼져 있지만 희미하게 깜빡인다.<br><br>의자에 여러 명이 앉은 흔적이 있다.<br><br>라벨: <span class="dhl">"프로젝트 레테 — 기억 삭제 시스템 v2.1"</span><br><br><span class="ddim">이 장치로 우리 자신의 기억도 지웠다. 스스로 이 방에 들어와, 스스로 문을 잠근 뒤.</span></div>`);say('기억 삭제 장치. 우리는 스스로 기억을 지웠다.','// 진실')}
-    if(id==='filedesk'){if(!has('vfile')){say('피험자 파일들. 캐비닛에서 최동혁의 파일을 먼저 가져와야 한다.','// 파일 책상');return}markFound('o-filedesk');openM('// 최동혁 파일 재확인',`<div class="doc" style="border-color:#3a2010"><div class="doc-ttl" style="color:#ff8050">// 최동혁 — 생년월일</div>이름: 최동혁<br>생년월일: <span class="dhl">1993년 12월 5일</span><br><br>출구 코드: <span style="color:var(--yel);font-size:18px"><span class="dhl">1205</span></span><br><br><span class="ddim">이수현이 최동혁의 생일을 출구 코드로 설정했다.</span></div>`);say('출구 코드는 최동혁의 생일! 12월 5일 → 1205','// 핵심 단서!')}
-    if(id==='exit'){if(!has('vfile')){say('출구에 4자리 도어락. 최동혁의 파일에서 코드를 찾아야 한다.','// 출구');return}openNP('// 출구 도어락 — 4자리 코드','최동혁의 생년월일에서 코드를 찾아야 한다. (월일 형식)','exit',4)}
+    // ─── 프로필: 추모 메모에서 12월 ───
+    if(id==='profiles'){
+      if(S.seen.has('profiles')){
+        openM('// 연구원 프로필 / 추모 벽',`<div class="doc" style="border-color:#15153a"><div class="doc-ttl" style="color:#9060ff">// 프로젝트 레테 — 연구팀</div>벽면 가득 프로필 사진들. 한 사진이 눈에 들어온다.<br><br><span class="dhl" style="font-size:15px">김민준 — 프로젝트 레테 연구원</span><br>내 얼굴이다.<br><span class="drd">나는 피험자가 아니었다. 연구원이었다.</span></div><div class="doc" style="border-color:#3a1510;margin-top:12px"><div class="doc-ttl" style="color:#ff8050">// 추모 메모 — 최동혁</div>"동혁아, 겨울이 올 때마다 네 생일을 떠올릴 거야.<br>그 차가운 <span class="dhl" style="font-size:14px">12월</span>에 태어나서, 더 차가운 9월에 떠났구나.<br>미안해."<br><br><span class="ddim">— 이수현</span></div>`);
+        say('추모 메모: 최동혁은 12월에 태어났다.','// 프로필');return;
+      }
+      S.seen.add('profiles');markFound('o-profiles');AudioEngine.shock();triggerGlitch();
+      S.clue_month=true;
+      openM('// 연구원 프로필 / 추모 벽',`<div class="doc" style="border-color:#15153a"><div class="doc-ttl" style="color:#9060ff">// 프로젝트 레테 — 연구팀</div>벽면 가득 프로필 사진들.<br><br>한 사진이 눈에 들어온다.<br><br><span class="dhl" style="font-size:15px">김민준 — 프로젝트 레테 연구원</span><br><br>내 얼굴이다.<br><br><span class="drd">나는 피험자가 아니었다. 연구원이었다.</span><br><span class="ddim">기억을 지운 건 나 자신이었다는 건가.</span></div><div class="doc" style="border-color:#3a1510;margin-top:12px"><div class="doc-ttl" style="color:#ff8050">// 추모 메모 — 최동혁</div>프로필 벽 한쪽에 추모 코너가 있다.<br><br>"동혁아, 겨울이 올 때마다 네 생일을 떠올릴 거야.<br>그 차가운 <span class="dhl" style="font-size:14px">12월</span>에 태어나서, 더 차가운 9월에 떠났구나.<br>미안해."<br><br><span class="ddim">— 이수현</span><br><br><span class="ddim">최동혁의 생일이 12월이라는 단서다!</span></div>`);
+      say('충격! 나는 연구원이었다... 그리고 최동혁은 12월생이다.','// 반전');
+      addNote(3,'<span class="note-hl">나(김민준)는 연구원이었다!</span> 기억을 스스로 지웠다');
+      addNote(3,'추모 메모: 최동혁은 <span class="note-hl">12월</span>에 태어남');
+    }
+
+    // ─── 뇌파측정장치: 세션 로그에서 05일 ───
+    if(id==='scanner'){
+      if(S.seen.has('scanner')){
+        openM('// 뇌파 측정 장치 — 세션 로그',`<div class="doc" style="border-color:#1a1a40"><div class="doc-ttl" style="color:#9060ff">// LETHE v2.1 — 마지막 세션 로그</div><span class="ddim">피험자: #083 최동혁</span><br><br>세션 1: 2028.08.30 — 정상<br>세션 2: 2028.09.05 — 부분 반응<br>세션 3: 2028.09.10 — 관찰 필요<br>세션 4: 2028.09.17 — <span class="drd">[치명적 오류]</span><br><br><span style="border-top:1px solid var(--adim);padding-top:8px;display:block;margin-top:6px">환자 생체인증 등록 코드:<br>생일 일(日)자 — <span class="dhl" style="font-size:15px">05</span></span></div>`);
+        say('장치 로그: 최동혁의 생일 일(日)자 = 05','// 장치');return;
+      }
+      S.seen.add('scanner');markFound('o-scanner');
+      S.clue_day=true;
+      openM('// 뇌파 측정 장치',`<div class="doc" style="border-color:#1a1a40"><div class="doc-ttl" style="color:#9060ff">// 기억 선택적 삭제 시스템</div>거대한 장치가 중앙에 있다. 전원이 꺼져 있지만 희미하게 깜빡인다.<br>의자에 여러 명이 앉은 흔적이 있다.<br><br>라벨: <span class="dhl">"프로젝트 레테 — 기억 삭제 시스템 v2.1"</span><br><br><span class="ddim">이 장치로 우리 자신의 기억도 지웠다.</span></div><div class="doc" style="border-color:#1a1a40;margin-top:12px"><div class="doc-ttl" style="color:#9060ff">// 마지막 세션 로그</div><span class="ddim">피험자: #083 최동혁</span><br><br>세션 1: 2028.08.30 — 정상<br>세션 2: 2028.09.05 — 부분 반응<br>세션 3: 2028.09.10 — 관찰 필요<br>세션 4: 2028.09.17 — <span class="drd">[치명적 오류]</span><br><br><span style="border-top:1px solid var(--adim);padding-top:8px;display:block;margin-top:6px">환자 생체인증 등록 코드:<br>생일 일(日)자 — <span class="dhl" style="font-size:15px">05</span></span><br><br><span class="ddim">최동혁의 생일 일(日)자가 05일이라는 단서다!</span></div>`);
+      say('장치에서 세션 로그 발견! 최동혁의 생일 일(日)자: 05','// 단서 발견');
+      addNote(3,'뇌파장치 로그: 최동혁 생체인증 = 생일 <span class="note-hl">일(日)자 05</span>');
+    }
+
+    // ─── 피험자 파일 ───
+    if(id==='filedesk'){
+      if(!has('vfile')){say('피험자 파일들. 캐비닛에서 최동혁의 파일을 먼저 가져와야 한다.','// 파일 책상');return}
+      markFound('o-filedesk');
+      const hasClues=S.clue_month&&S.clue_day;
+      if(hasClues){
+        openM('// 최동혁 파일 + 단서 종합',`<div class="doc" style="border-color:#3a2010"><div class="doc-ttl" style="color:#ff8050">// 피험자 #083 — 기밀 기록</div>이름: 최동혁<br>생년월일: 1993년 <span class="dfaded">██월 ██일</span> <span class="ddim">[검열됨]</span><br><br>시술 날짜: 2028.09.17<br>결과: <span class="drd">이상 반응 — 피험자 사망</span></div><div class="doc" style="border-color:#005a3a;margin-top:12px"><div class="doc-ttl" style="color:var(--ac)">// 단서 종합</div>프로필 추모 메모 \u2192 <span class="dhl">12월</span><br>뇌파장치 생체인증 \u2192 <span class="dhl">05일</span><br><br>출구 코드 = 최동혁의 생일 (월일 4자리)<br>\u2192 <span style="color:var(--yel);font-size:16px"><span class="dhl">1205</span></span></div>`);
+        say('단서 종합! 최동혁 생일 = 12월 05일 \u2192 출구 코드: 1205','// 핵심 단서!');
+        addNote(3,'종합: 최동혁 생일 = <span class="note-hl">12월 05일</span> \u2192 출구 코드 <span class="note-hl">1205</span>');
+      }else{
+        openM('// 최동혁 파일 재확인',`<div class="doc" style="border-color:#3a2010"><div class="doc-ttl" style="color:#ff8050">// 피험자 #083 — 기밀 기록</div>이름: 최동혁<br>생년월일: 1993년 <span class="dfaded">██월 ██일</span> <span class="ddim">[검열됨]</span><br><br>시술 날짜: 2028.09.17<br>결과: <span class="drd">이상 반응 — 피험자 사망</span><br><br><span class="ddim">생년월일이 검열되어 있다!<br>출구 코드를 알려면 ${!S.clue_month?'최동혁의 생일 월(月)':''}${!S.clue_month&&!S.clue_day?' 과 ':''}${!S.clue_day?'생일 일(日)':''} 정보를 다른 곳에서 찾아야 한다.<br>프로필 사진 벽과 뇌파 측정 장치를 조사해보자.</span></div>`);
+        say('생년월일이 검열됨! 프로필 벽과 뇌파장치에서 단서를 더 찾아야 한다.','// 파일');
+      }
+    }
+
+    // ─── 출구 ───
+    if(id==='exit'){
+      if(!has('vfile')){say('출구에 4자리 도어락. 최동혁의 파일에서 코드를 찾아야 한다.','// 출구');return}
+      openNP('// 출구 도어락 — 4자리 코드','최동혁의 생년월일(월일 4자리)을 입력하세요. 프로필 벽과 장치 로그를 참고!','exit',4);
+    }
   }
 }
+
+// ─── ROOM NAVIGATION ───
 function goRoom(n){
-  document.querySelectorAll('.room').forEach(r=>r.classList.remove('on'))
-  $(`r${n}`).classList.add('on')
-  S.room=n
-  const names={1:'ROOM 01 — 격리 병동',2:'ROOM 02 — 연구원 사무실',3:'ROOM 03 — 실험실'}
-  $('rlbl').textContent=names[n]
-  $('pfill').style.width={1:5,2:38,3:72}[n]+'%'
-  if(n===1){$('locker-lbl').textContent=S.solved.locker?'사물함 [열림]':'사물함 [잠김]';if(has('key')){$('door1-lbl').textContent='사무실 문 [→]';$('dg1').style.display='block'}}
-  if(n===2){$('comp-lbl').textContent=S.solved.computer?'컴퓨터 [켜짐]':'컴퓨터 [잠김]';$('cab-lbl').textContent=S.solved.cabinet?'캐비닛 [열림]':'캐비닛 [잠김]';if(has('card')){$('door2-lbl').textContent='실험실 문 [→]';$('dg2').style.display='block'}}
-  say({1:'형광등이 깜빡이는 좁은 방. 손목의 ID 밴드가 낯설다. 탈출구를 찾아야 한다.',2:'어지럽게 뒤집힌 책상들. 누군가 서둘러 떠난 것 같다. 단서를 찾아라.',3:'중앙에 거대한 장치. 벽면을 가득 채운 얼굴 사진들... 그 중 하나가 눈에 들어온다.'}[n],'// '+names[n])
+  document.querySelectorAll('.room').forEach(r=>r.classList.remove('on'));
+  const room=$(`r${n}`);room.classList.add('on');room.classList.add('room-enter');
+  setTimeout(()=>room.classList.remove('room-enter'),500);
+  S.room=n;
+  const names={1:'ROOM 01 — 격리 병동',2:'ROOM 02 — 연구원 사무실',3:'ROOM 03 — 실험실'};
+  $('rlbl').textContent=names[n];
+  $('pfill').style.width={1:5,2:38,3:72}[n]+'%';
+  AudioEngine.startAmbient(n);
+
+  if(n===1){
+    $('locker-lbl').textContent=S.solved.locker?'사물함 [열림]':'사물함 [잠김]';
+    if(has('key')){$('door1-lbl').textContent='사무실 문 [\u2192]';$('dg1').style.display='block'}
+  }
+  if(n===2){
+    $('comp-lbl').textContent=S.solved.computer?'컴퓨터 [켜짐]':'컴퓨터 [잠김]';
+    $('cab-lbl').textContent=S.solved.cabinet?'캐비닛 [열림]':'캐비닛 [잠김]';
+    if(has('card')){$('door2-lbl').textContent='실험실 문 [\u2192]';$('dg2').style.display='block'}
+  }
+  if(n===3){const fl=$('r3-flashlight');fl.classList.add('active')}
+
+  say({
+    1:'형광등이 깜빡이는 좁은 방. 손목의 ID 밴드가 낯설다. 탈출구를 찾아야 한다.',
+    2:'어지럽게 뒤집힌 책상들. 누군가 서둘러 떠난 것 같다. 단서를 찾아라.',
+    3:'중앙에 거대한 장치. 벽면을 가득 채운 얼굴 사진들... 그 중 하나가 눈에 들어온다.'
+  }[n],'// '+names[n]);
 }
+
+// ─── HINT ───
+function showHint(){
+  if(S.hintUsed>=3)return;
+  S.hintUsed++;
+  const btn=$('hint-btn');btn.textContent=`HINT (${3-S.hintUsed})`;
+  if(S.hintUsed>=3)btn.classList.add('used');
+  let hint='';
+  if(S.room===1){
+    if(!S.seen.has('bed'))hint='침대를 조사해보세요. 매트리스 아래에 뭔가 있을 수 있습니다.';
+    else if(!S.seen.has('idband'))hint='ID 밴드를 확인해보세요.';
+    else if(!S.solved.locker)hint='쪽지의 수학 문제를 풀어보세요. \u221A16 = ?, (50-1)\u00F77 = ?';
+    else hint='열쇠로 사무실 문을 열 수 있습니다.';
+  }else if(S.room===2){
+    if(!S.seen.has('journal'))hint='연구 일지를 읽어보세요.';
+    else if(!S.solved.computer)hint='09.10에서 "일주일 뒤", 09.18에서 "어제"... 사이의 날짜는?';
+    else if(!S.seen.has('desk'))hint='책상 서랍을 조사해보세요. 보안등급 정보가 있을 수 있습니다.';
+    else if(!S.solved.cabinet)hint='보안등급(5) + 피험자번호(083) = ?';
+    else hint='출입증으로 실험실 문을 열 수 있습니다.';
+  }else{
+    if(!S.clue_month)hint='프로필 벽의 추모 메모를 읽어보세요. 생일 월 정보가 있습니다.';
+    else if(!S.clue_day)hint='뇌파측정 장치의 세션 로그를 확인하세요. 생일 일자 정보가 있습니다.';
+    else if(!has('vfile'))hint='캐비닛에서 최동혁 파일을 가져온 뒤 파일 책상에서 확인하세요.';
+    else hint='12월 + 05일 = 출구 코드 4자리!';
+  }
+  say('\u{1F4A1} '+hint,'// HINT');
+}
+
+// ─── TIMER ───
+let heartbeatInterval=null;
 function startTimer(){
-  S.start=Date.now()
+  S.start=Date.now();
   S.iv=setInterval(()=>{
-    S.timer--
-    const m=Math.floor(S.timer/60),s=S.timer%60
-    $('timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')
-    if(S.timer<=300)$('timer').classList.add('danger')
-    if(S.timer<=0){clearInterval(S.iv);$('go').classList.add('on')}
-  },1000)
+    S.timer--;
+    const m=Math.floor(S.timer/60),s=S.timer%60;
+    $('timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    if(S.timer<=300){$('timer').classList.add('danger');if(!heartbeatInterval)heartbeatInterval=setInterval(()=>AudioEngine.heartbeat(),1000)}
+    if(S.timer<=60&&S.timer%10===0)triggerGlitch();
+    if(S.timer<=0){clearInterval(S.iv);if(heartbeatInterval)clearInterval(heartbeatInterval);AudioEngine.stopAmbient();AudioEngine.error();$('go').classList.add('on')}
+  },1000);
 }
-function startGame(){$('intro').style.display='none';$('game').classList.add('on');goRoom(1);startTimer()}
+
+// ─── START ───
+function startGame(){AudioEngine.init();$('intro').style.display='none';$('game').classList.add('on');goRoom(1);startTimer();setTimeout(randomGlitch,8000)}
+
+// ─── KEYBOARD ───
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeM();
+  if(S.npPuz&&$('mbg').classList.contains('on')){
+    if(e.key>='0'&&e.key<='9')npIn(e.key);
+    if(e.key==='Backspace')npDel();
+    if(e.key==='Enter')npOk();
+  }
+});
+
+initParticles();
 </script>
 </body>
 </html>
