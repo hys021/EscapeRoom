@@ -15,7 +15,7 @@
 *   **Cyber-Noir UI**: CSS 변수와 SVG를 활용한 몰입감 있는 다크 인터페이스
 *   **Interaction System**: 포인트 앤 클릭 방식의 오브젝트 탐색 및 인벤토리 시스템
 *   **Dynamic Puzzles**: 넘패드, 비디오 메시지, 문서 분석 등 다양한 형태의 논리 퍼즐
-*   **Multi-Room Navigation**: 격리 병동에서 실험실까지 이어지는 3단계 스테이지 구조[cite: 1]
+*   **Multi-Room Navigation**: 격리 병동에서 실험실까지 이어지는 3단계 스테이지 구조
 
 ---
 
@@ -23,22 +23,22 @@
 
 *   **Frontend**: Pure HTML5, CSS3 (Keyframes Animation, SVG Graphics)
 *   **Scripting**: Vanilla JavaScript (ES6+)
-*   **Design**: Google 'Share Tech Mono' Font (터미널 감성 구현)[cite: 1]
+*   **Design**: Google 'Share Tech Mono' Font (터미널 감성 구현)
 *   **Build Tool**: Python 3 (Asset Bundling Script)
 
 ---
 
 ## 📂 Project Structure (폴더 구조)
 
-협업 효율성을 위해 관심사 분리(SoC) 원칙에 따라 구조화되었습니다.[cite: 1]
+협업 효율성을 위해 관심사 분리(SoC) 원칙에 따라 구조화되었습니다.
 ```
 Project_Lethe/
-├── index.html         # 메인 게임 레이아웃[cite: 1]
-├── css/               # 스타일 시트 폴더[cite: 1]
-│   └── style.css      # 게임 테마 및 애니메이션 정의[cite: 1]
-└── js/                # 자바스크립트 폴더[cite: 1]
-    ├── data.js        # 스토리 텍스트 및 퍼즐 정답 데이터[cite: 1]
-    └── game.js        # 타이머, 아이템, 룸 전환 핵심 로직[cite: 1]
+├── index.html         # 메인 게임 레이아웃
+├── css/               # 스타일 시트 폴더
+│   └── style.css      # 게임 테마 및 애니메이션 정의
+└── js/                # 자바스크립트 폴더
+    ├── data.js        # 스토리 텍스트 및 퍼즐 정답 데이터
+    └── game.js        # 타이머, 아이템, 룸 전환 핵심 로직
 ```
 
 ## 👥 Collaboration (협업 정보)
